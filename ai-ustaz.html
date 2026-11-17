@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="kk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7c3aed">
+<title>AI ustaz — Python тілін нөлден үйрен</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--nv:#0d1330;--pu:#7c3aed;--in:#4f46e5;--bg:#f3f4f8;--card:#fff;--ink:#161a33;--mut:#6b7090;--ln:#e3e5f0;--ok:#16a34a;--bad:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0f24;--card:#151b3b;--ink:#e8eafc;--mut:#9aa0c8;--ln:#262d57;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#0b0f24;--card:#151b3b;--ink:#e8eafc;--mut:#9aa0c8;--ln:#262d57;--ok:#4ade80;--bad:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Manrope,system-ui,sans-serif}
+a{color:var(--in);text-decoration:none}h1{font-size:30px;line-height:1.2;margin:.3em 0}h3{margin:1.2em 0 .4em}
+header{background:var(--nv);position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
+.logo{color:#fff;font-weight:800;letter-spacing:.5px;font-size:19px}.logo b{background:linear-gradient(90deg,#a78bfa,#6366f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:4px;flex-wrap:wrap;flex:1}nav a{color:#c9cdf0;padding:6px 12px;border-radius:8px;font-weight:600;font-size:15px}nav a.on,nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+.pill{background:linear-gradient(90deg,var(--pu),var(--in));color:#fff;padding:6px 14px;border-radius:20px;font-weight:600;font-size:14px}
+main{max-width:1080px;margin:0 auto;padding:24px 18px 60px}
+.hero{background:linear-gradient(135deg,#0d1330,#2a1670 70%,#5b21b6);color:#fff;border-radius:22px;padding:42px 36px;display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding:28px 20px}}
+.hero h1{font-size:38px;color:#fff}.hero p{color:#cfd3f5;font-size:18px}
+.codecard{background:#070b20;border:1px solid #3b3f80;border-radius:14px;padding:16px;font:14px/1.7 'Fira Code',monospace;color:#e8eafc;animation:fl 4s ease-in-out infinite;box-shadow:0 20px 50px rgba(124,58,237,.35)}
+@keyframes fl{50%{transform:translateY(-10px)}}@media(prefers-reduced-motion:reduce){.codecard{animation:none}}
+.btn{display:inline-block;font:700 15px Manrope,sans-serif;padding:11px 22px;border-radius:12px;border:0;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--pu),var(--in))}
+.btn.ghost{background:none;border:1.5px solid var(--in);color:var(--in)}.hero .btn.ghost{border-color:#fff;color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #f2c230;outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin:16px 0}
+.card,.card2{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(20,20,60,.06);display:block;color:var(--ink)}
+.card2{margin:14px 0}.card:hover{border-color:var(--pu)}.card h3{margin:.4em 0}.card p{margin:0 0 8px;color:var(--mut)}
+.ic{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--pu),var(--in));color:#fff;display:grid;place-items:center;font-weight:800}
+.bar{height:8px;background:var(--ln);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pu),var(--in))}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:20px 0}.stat{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;text-align:center}.stat b{display:block;font-size:26px;color:var(--pu)}.stat span{color:var(--mut);font-size:14px}
+.row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px 16px;margin:8px 0;color:var(--ink)}.row:hover{border-color:var(--pu)}.row .s{margin-left:auto}
+.row2{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.ed{display:flex;background:#0d1330;border-radius:12px 12px 0 0;height:200px;font:14px/1.6 'Fira Code',monospace;overflow:hidden}
+.gut{padding:12px 10px;color:#6b7199;text-align:right;white-space:pre;overflow:hidden;border-right:1px solid #262d57;user-select:none}
+.wr{position:relative;flex:1}.hl,.ed textarea{position:absolute;inset:0;margin:0;padding:12px;font:inherit;white-space:pre;tab-size:4;border:0}
+.hl{color:#e8eafc;overflow:hidden;pointer-events:none}.ed textarea{background:transparent;color:transparent;caret-color:#fff;resize:none;overflow:auto}
+.hl i{font-style:normal}.k{color:#c4a7ff}.s{color:#8de0a5}.c{color:#7a82b0}.n{color:#ffb86b}
+.out,pre.st{background:#070b20;color:#8de0a5;margin:0 0 4px;padding:12px 14px;border-radius:0 0 12px 12px;font:14px/1.6 'Fira Code',monospace;white-space:pre-wrap;min-height:48px}
+pre.st{border-radius:12px;color:#e8eafc}.out.err{color:#ff8b8b}
+.opt{display:flex;gap:10px;padding:9px 12px;border:1px solid var(--ln);border-radius:10px;margin:7px 0;cursor:pointer}
+input[type=text]{font:16px 'Fira Code',monospace;padding:9px 12px;border:1.5px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--ink);max-width:100%}
+select{font:inherit;padding:9px;border-radius:10px;border:1.5px solid var(--ln);background:var(--bg);color:var(--ink)}
+.ex,.msg{margin-top:10px;padding:10px 14px;border-radius:10px;background:color-mix(in srgb,var(--in) 10%,transparent)}.msg.ok{background:color-mix(in srgb,var(--ok) 16%,transparent)}.msg.no{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.tag{font-size:13px;color:var(--pu);font-weight:700}.mut{color:var(--mut)}.bd{display:inline-block;margin:4px;padding:8px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--card)}.bd.off{opacity:.4;filter:grayscale(1)}
+.cert{border:3px double var(--pu);border-radius:16px;padding:26px;text-align:center;background:var(--card)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+.av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--pu),var(--in));color:#fff;font:800 28px Manrope;display:grid;place-items:center}
+.wide{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:8px;border-bottom:1px solid var(--ln);text-align:left}
+
+.notice{background:var(--card);border:1px solid var(--ln);border-left:4px solid var(--pu);padding:12px 16px;border-radius:12px;margin:14px 0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.btn:disabled{opacity:.55;cursor:not-allowed}.chip{display:inline-block;border:1px solid var(--ln);border-radius:20px;padding:4px 12px;font-size:13px;color:var(--mut)}
+.ed{height:260px}.ed textarea{color:#e8eafc;z-index:1}.ed .hl{display:none}.gut{min-width:42px}.out{max-height:330px;overflow:auto}
+@media(max-width:600px){header{padding:10px 12px;gap:8px}nav{gap:0}nav a{font-size:12px;padding:5px 7px}.pill{font-size:12px}main{padding:18px 12px 45px}.hero h1{font-size:29px}.row{flex-wrap:wrap}.row .s{margin-left:0}.card2{padding:14px}}
+@media print{header,.row2,.toolbar,button{display:none!important}body{background:white;color:black}.cert{page-break-inside:avoid}}
+
+.ai-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:18px;align-items:start}.ai-panel{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:18px}.ai-panel h3{margin-top:0}.ai-tag{display:inline-block;padding:4px 9px;border-radius:999px;background:color-mix(in srgb,var(--pu) 13%,var(--card));color:var(--ink);font-size:12px;font-weight:700}.steps{padding-left:24px}.steps li{margin:8px 0}.ai-answer{white-space:pre-wrap;line-height:1.65;border:1px solid var(--ln);border-radius:12px;padding:14px;margin-top:12px;background:var(--bg);min-height:70px}.ai-bot{display:flex;flex-direction:column;gap:12px}.ai-bot textarea{width:100%;min-height:90px;padding:12px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}.ai-sample{display:flex;gap:8px;flex-wrap:wrap}.ai-sample button{background:var(--card);color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:8px;cursor:pointer}.guide{background:color-mix(in srgb,var(--pu) 7%,var(--card));border:1px solid var(--ln);padding:16px;border-radius:14px;margin:14px 0}.guide h3{margin-top:0}.lesson-chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.lesson-chips a{padding:6px 12px;background:var(--card);border:1px solid var(--ln);border-radius:999px}.btn:disabled{opacity:.55;cursor:not-allowed}@media(max-width:800px){.ai-layout{grid-template-columns:1fr}}
+
+/* AI tutor: spacious, readable chat */
+#app:has(.tutor-page){max-width:1200px;margin:0 auto}
+.tutor-page{font-size:17px;line-height:1.7}
+.tutor-hero{padding:26px 30px;border-radius:20px;background:linear-gradient(125deg,#11183b,#4c1d95);color:white;margin-bottom:20px}
+.tutor-hero h1{font-size:clamp(27px,3.3vw,40px);margin:0 0 8px;color:#fff}
+.tutor-hero p{font-size:17px;color:#e4dcff;max-width:850px;margin:0}
+.tutor-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.tutor-main,.tutor-side{background:var(--card);border:1px solid var(--ln);border-radius:20px;padding:22px;min-width:0}
+.tutor-side h3{margin:0 0 9px;font-size:20px}
+.tutor-side p,.tutor-side li{font-size:15px}
+.tutor-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.tutor-status{font-size:13px;padding:5px 11px;border-radius:22px;background:color-mix(in srgb,var(--pu) 11%,var(--card));color:var(--ink);font-weight:700}
+.tutor-chat{height:460px;min-height:300px;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);border:1px solid var(--ln);padding:18px;border-radius:16px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+.tutor-message{display:flex;gap:11px;align-items:flex-start;max-width:96%}
+.tutor-message.user{align-self:flex-end;flex-direction:row-reverse}
+.tutor-avatar{flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--pu),var(--in));color:white;font-size:19px}
+.tutor-message.user .tutor-avatar{background:var(--ln);color:var(--ink)}
+.tutor-bubble{background:var(--card);border:1px solid var(--ln);border-radius:15px;padding:13px 16px;min-width:0;overflow-wrap:anywhere;box-shadow:0 1px 8px rgba(30,20,80,.05);font-size:16px;line-height:1.8;white-space:pre-wrap}
+.tutor-message.user .tutor-bubble{background:color-mix(in srgb,var(--pu) 13%,var(--card));border-color:color-mix(in srgb,var(--pu) 23%,var(--ln))}
+.tutor-author{display:block;font-size:13px;font-weight:800;color:var(--mut);margin-bottom:4px}
+.tutor-quick{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tutor-quick button{border:1px solid var(--ln);color:var(--ink);background:var(--card);border-radius:25px;font:600 14px Manrope,sans-serif;padding:9px 13px;cursor:pointer}
+.tutor-quick button:hover{border-color:var(--pu);background:var(--bg)}
+.tutor-compose{display:flex;flex-direction:column;gap:10px;padding-top:8px}
+.tutor-compose label{font-weight:800;font-size:17px}
+.tutor-compose textarea{width:100%;min-height:125px;resize:vertical;padding:16px;border:2px solid var(--ln);border-radius:14px;background:var(--bg);color:var(--ink);font:16px/1.6 Manrope,sans-serif}
+.tutor-compose textarea:focus{border-color:var(--pu)}
+.tutor-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tutor-actions .btn{font-size:16px;padding:13px 22px}
+.tutor-note{color:var(--mut);font-size:13px;margin:0}
+.tutor-side .tutor-steps{padding-left:21px;margin:9px 0 19px}
+.tutor-side .tutor-steps li{margin:8px 0}
+.tutor-context{padding:12px 13px;background:var(--bg);border-radius:12px;overflow-wrap:anywhere;font-size:14px}
+.tutor-context b{display:block;margin-bottom:3px}
+.tutor-code{font:13px/1.5 'Fira Code',monospace;white-space:pre-wrap;max-height:155px;overflow:auto}
+@media(max-width:900px){.tutor-layout{grid-template-columns:1fr}.tutor-side{order:2}}
+@media(max-width:600px){.tutor-hero{padding:22px 18px}.tutor-main,.tutor-side{padding:14px}.tutor-chat{height:380px;padding:12px}.tutor-bubble{font-size:15px;padding:10px 12px}.tutor-avatar{width:32px;height:32px;flex-basis:32px}.tutor-message{max-width:100%}.tutor-actions .btn{flex:1}}
+
+/* Жаңа басты бет: тек #home бағытына арналған стильдер */
+.home-v2{display:flex;flex-direction:column;gap:32px}
+.home-v2 .home-hero{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 82% 15%,#663ac7 0,transparent 40%),linear-gradient(125deg,#111738 3%,#22205d 56%,#45218e);color:white;padding:clamp(24px,5vw,56px);display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.9fr);gap:32px;align-items:center;min-height:410px}
+.home-v2 .home-hero:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 70% 95%,#27b4c338,transparent 35%)}
+.home-v2 .hero-kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;background:#ffffff1a;border:1px solid #ffffff30;border-radius:30px;font-size:13px;font-weight:800;color:#deebff;letter-spacing:.2px}
+.home-v2 .home-hero h1{font-size:clamp(32px,4.8vw,55px);letter-spacing:-1.8px;line-height:1.13;margin:20px 0}
+.home-v2 .home-hero h1 em{font-style:normal;color:#9ae8f2}
+.home-v2 .home-hero p{font-size:17px;color:#d5dcf6;max-width:550px;margin:0 0 22px}
+.home-v2 .home-hero .home-actions{display:flex;flex-wrap:wrap;gap:11px}
+.home-v2 .home-hero .home-primary{background:#fff;color:#20164d;font-weight:800}
+.home-v2 .home-hero .home-secondary{border:1px solid #ffffff65;background:#ffffff15;color:white}
+.home-v2 .hero-note{display:flex;gap:15px;flex-wrap:wrap;margin-top:25px;color:#c9d8ed;font-size:13px}
+.home-v2 .hero-note span{display:inline-flex;align-items:center;gap:5px}
+.home-v2 .hero-preview{border-radius:18px;background:#080f25;border:1px solid #8892e84d;overflow:hidden;box-shadow:0 30px 75px #03072780;transform:rotate(1deg)}
+.home-v2 .preview-bar{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #ffffff20;color:#aebce0;font-size:12px}
+.home-v2 .preview-dots{display:flex;gap:6px}.home-v2 .preview-dots i{height:9px;width:9px;border-radius:50%;background:#fb7185}.home-v2 .preview-dots i:nth-child(2){background:#fbbf24}.home-v2 .preview-dots i:nth-child(3){background:#34d399}
+.home-v2 .preview-code{font:14px/1.85 'Fira Code',monospace;padding:21px;color:#e6eaff;white-space:pre-wrap;overflow-wrap:anywhere}
+.home-v2 .preview-code .kw{color:#bfabff}.home-v2 .preview-code .str{color:#86efac}.home-v2 .preview-code .comment{color:#8a97c6}
+.home-v2 .preview-output{background:#111d36;padding:14px 20px;font:13px/1.6 'Fira Code',monospace;color:#a5f3c6;border-top:1px solid #ffffff16}
+.home-v2 .section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:15px}
+.home-v2 .section-heading h2{margin:3px 0;font-size:clamp(23px,3vw,30px);line-height:1.25}
+.home-v2 .section-heading p{margin:5px 0;color:var(--mut)}
+.home-v2 .section-heading a{font-weight:800}
+.home-v2 .home-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.home-v2 .metric{background:var(--card);border:1px solid var(--ln);padding:20px;border-radius:16px}
+.home-v2 .metric strong{display:block;font-size:29px;color:var(--ink);line-height:1.1}.home-v2 .metric span{display:block;color:var(--mut);font-size:13px;margin-top:7px}
+.home-v2 .feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.home-v2 .feature{display:flex;flex-direction:column;gap:10px;padding:24px;border:1px solid var(--ln);border-radius:20px;background:var(--card);color:var(--ink);transition:transform .2s,border-color .2s}
+.home-v2 .feature:hover,.home-v2 .module-card:hover{transform:translateY(-3px);border-color:#8d6bea}
+.home-v2 .feature-icon{width:48px;height:48px;display:grid;place-items:center;background:color-mix(in srgb,var(--pu) 13%,var(--card));border-radius:13px;font-size:24px}
+.home-v2 .feature b{font-size:18px}.home-v2 .feature p{margin:0;color:var(--mut);font-size:14px}.home-v2 .feature .more{color:var(--pu);font-weight:800;font-size:14px;margin-top:auto;padding-top:9px}
+.home-v2 .module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.home-v2 .module-card{display:flex;flex-direction:column;gap:12px;padding:20px;background:var(--card);border:1px solid var(--ln);color:var(--ink);border-radius:18px;transition:transform .2s,border-color .2s}
+.home-v2 .module-card .module-top{display:flex;align-items:center;justify-content:space-between;color:var(--mut);font-size:13px}
+.home-v2 .module-num{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#4338ca);display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px}
+.home-v2 .module-card h3{margin:0;font-size:17px;line-height:1.35;min-height:2.7em}.home-v2 .module-card .bar{margin-top:auto}
+.home-v2 .module-card .module-go{font-size:14px;font-weight:800;color:var(--pu)}
+.home-v2 .home-banner{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;border-radius:22px;padding:29px;background:linear-gradient(105deg,#1c2352,#452b83);color:#fff}
+.home-v2 .home-banner h2{color:#fff;margin:0 0 7px;font-size:24px}.home-v2 .home-banner p{margin:0;color:#d4d9f7}.home-v2 .home-banner .btn{background:#fff;color:#302166}
+@media(max-width:850px){.home-v2 .home-hero{grid-template-columns:1fr}.home-v2 .hero-preview{transform:none;max-width:590px}.home-v2 .feature-grid{grid-template-columns:1fr 1fr}.home-v2 .home-metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.home-v2{gap:27px}.home-v2 .home-hero{padding:25px 20px;border-radius:20px}.home-v2 .home-hero h1{letter-spacing:-.8px}.home-v2 .feature-grid,.home-v2 .module-grid{grid-template-columns:1fr}.home-v2 .preview-code{font-size:12px;padding:15px}.home-v2 .home-metrics{gap:9px}.home-v2 .metric{padding:15px}.home-v2 .metric strong{font-size:24px}.home-v2 .home-banner{padding:22px}}
+@media(prefers-reduced-motion:reduce){.home-v2 .feature,.home-v2 .module-card{transition:none}}
+
+/* Робот қолында Python жазуын ұстайды — барлық бетте */
+.py-page-sign{display:flex;justify-content:flex-end;align-items:center;min-height:126px;margin:0 0 10px;pointer-events:auto;border:0;background:transparent;padding:0;width:100%;cursor:pointer;text-align:right;position:relative}
+.py-page-sign:after{content:"Роботты басып, бағдарламалауды баста";font:700 12px Manrope,system-ui,sans-serif;color:var(--pu);margin:0 12px 0 0;align-self:flex-end;padding-bottom:8px}
+.py-page-sign:focus-visible{outline:3px solid var(--pu);outline-offset:4px;border-radius:12px}
+.py-robot{display:block;width:240px;max-width:100%;height:125px;filter:drop-shadow(0 8px 12px rgba(70,55,150,.18));animation:robot-float 3.2s ease-in-out infinite;transform-origin:center center}
+.py-robot .robot-arm-left{transform-box:fill-box;transform-origin:right top;animation:robot-left 3.2s ease-in-out infinite}
+.py-robot .robot-arm-right{transform-box:fill-box;transform-origin:left top;animation:robot-right 3.2s ease-in-out infinite}
+.py-robot .robot-eyes{animation:robot-blink 5s step-end infinite;transform-box:fill-box;transform-origin:center}
+.py-robot .robot-sign{animation:robot-sign-move 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.py-robot .robot-sign-word{font:800 27px/1 Manrope,system-ui,sans-serif;fill:#fff;letter-spacing:.7px}
+@keyframes robot-float{0%,100%{transform:translateY(1px) rotate(-1.5deg)}50%{transform:translateY(-7px) rotate(1.5deg)}}
+@keyframes robot-left{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(7deg)}}
+@keyframes robot-right{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-7deg)}}
+@keyframes robot-sign-move{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes robot-blink{0%,94%,98%,100%{transform:scaleY(1)}96%{transform:scaleY(.12)}}
+@media(max-width:600px){.py-page-sign{min-height:112px}.py-robot{width:208px;height:110px}}
+@media(prefers-reduced-motion:reduce){.py-robot,.py-robot .robot-arm-left,.py-robot .robot-arm-right,.py-robot .robot-eyes,.py-robot .robot-sign{animation:none}}
+
+/* Барлық беттегі қалқымалы AI-көмекші */
+.ai-float-toggle{position:fixed;right:22px;bottom:22px;z-index:70;display:flex;align-items:center;gap:10px;padding:13px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;font:800 15px Manrope,system-ui,sans-serif;box-shadow:0 12px 34px #2b237d75;cursor:pointer;transition:transform .2s}
+.ai-float-toggle:hover{transform:translateY(-3px)}.ai-float-toggle span:first-child{font-size:24px}
+.ai-floating{position:fixed;right:20px;bottom:88px;z-index:71;width:min(430px,calc(100vw - 26px));height:min(600px,calc(100dvh - 112px));border:1px solid var(--ln);border-radius:22px;overflow:hidden;box-shadow:0 22px 70px #080f3775;background:var(--card);display:flex;flex-direction:column}
+.ai-floating[hidden]{display:none}.ai-floating-top{display:flex;align-items:center;gap:10px;background:linear-gradient(120deg,#181348,#5b21b6);color:white;padding:15px}.ai-floating-top strong{display:block;line-height:1.3}.ai-floating-top small{display:block;font-size:11px;color:#dfd8ff}.ai-floating-top button{margin-left:auto;color:#fff;background:#ffffff25;border:0;border-radius:9px;padding:6px 10px;cursor:pointer;font-size:20px}
+.ai-float-context{background:color-mix(in srgb,var(--pu) 9%,var(--card));padding:9px 14px;color:var(--ink);font-size:12px;border-bottom:1px solid var(--ln)}
+.ai-float-messages{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}.ai-float-message{max-width:94%;align-self:flex-start;background:var(--bg);border:1px solid var(--ln);border-radius:15px;padding:10px 13px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.55}.ai-float-message.user{align-self:flex-end;background:#7c3aed;color:#fff;border-color:#7c3aed}.ai-float-message small{display:block;font-weight:800;font-size:11px;opacity:.8;margin-bottom:5px}.ai-float-compose{padding:12px;border-top:1px solid var(--ln)}.ai-float-compose textarea{width:100%;height:76px;min-height:66px;resize:vertical;padding:10px 12px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);font:14px Manrope,system-ui,sans-serif}.ai-float-actions{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}.ai-float-actions button{border:0;border-radius:10px;padding:9px 13px;cursor:pointer;background:var(--pu);color:#fff;font-weight:700}.ai-float-actions button.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--ln)}.ai-float-actions button:disabled{opacity:.6;cursor:wait}.ai-float-status{color:var(--mut);font-size:11px;margin-top:6px}.ai-test-note{background:color-mix(in srgb,#f59e0b 10%,var(--card));border:1px solid #f59e0b77;border-radius:10px;padding:9px 12px;font-size:13px;margin-top:12px}
+@media(max-width:600px){.ai-float-toggle{bottom:12px;right:12px;padding:11px 14px}.ai-floating{right:8px;bottom:72px;width:calc(100vw - 16px);height:min(600px,calc(100dvh - 85px))}}
+@media(prefers-reduced-motion:reduce){.ai-float-toggle{transition:none}}
+@media print{.ai-float-toggle,.ai-floating{display:none!important}}
+
+/* ===== AI ustaz: minimalist theme ===== */
+:root{--pu:#7c3aed;--in:#7c3aed;--nv:#fff;--bg:#faf8ff;--card:#fff;--ink:#1e1633;--mut:#7a6f94;--ln:#ebe5f8;--ok:#15803d;--bad:#b91c1c;--on:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--pu:#a78bfa;--in:#a78bfa;--nv:#1b1530;--bg:#120e1f;--card:#1b1530;--ink:#f3efff;--mut:#a79cc4;--ln:#2d2547;--ok:#4ade80;--bad:#f87171;--on:#1a0f33}}
+:root[data-theme="dark"]{--pu:#a78bfa;--in:#a78bfa;--nv:#1b1530;--bg:#120e1f;--card:#1b1530;--ink:#f3efff;--mut:#a79cc4;--ln:#2d2547;--ok:#4ade80;--bad:#f87171;--on:#1a0f33}
+a{color:var(--pu)}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:var(--pu)}
+header{background:var(--card);border-bottom:1px solid var(--ln)}
+.logo{color:var(--ink);font-weight:700;letter-spacing:0}.logo b{background:none;-webkit-text-fill-color:currentColor;color:var(--pu);font-weight:700}
+nav a{color:var(--mut)}nav a.on,nav a:hover{background:var(--bg);color:var(--ink)}
+#theme{border-color:var(--ln)!important;color:var(--ink)!important}
+.pill{background:var(--bg);color:var(--ink);border:1px solid var(--ln)}
+.btn,.home-v2 .home-hero .home-primary,.home-v2 .home-banner .btn{background:var(--pu);color:var(--on);border-radius:10px;box-shadow:none}
+.btn.ghost,.hero .btn.ghost,.home-v2 .home-hero .home-secondary{background:none;border:1px solid var(--ln);color:var(--ink)}
+.card,.card2,.stat,.metric,.row,.cert,.notice,.ai-panel,.tutor-main,.tutor-side,.feature,.module-card,.home-v2 .metric,.home-v2 .feature,.home-v2 .module-card{box-shadow:none;border-radius:12px}
+.hero,.home-v2 .home-hero,.tutor-hero,.home-v2 .home-banner{background:var(--card);color:var(--ink);border:1px solid var(--ln);border-radius:16px}
+.home-v2 .home-hero:before{display:none}
+.hero h1,.home-v2 .home-hero h1,.tutor-hero h1,.home-v2 .home-banner h2{color:var(--ink)}
+.home-v2 .home-hero h1 em{color:var(--pu)}
+.hero p,.home-v2 .home-hero p,.tutor-hero p,.home-v2 .home-banner p,.home-v2 .hero-note{color:var(--mut)}
+.home-v2 .hero-kicker{background:var(--bg);border-color:var(--ln);color:var(--mut)}
+.home-v2 .hero-preview{box-shadow:none;transform:none;border-color:var(--ln);background:#1a1230}.home-v2 .preview-output{background:#251a45}
+.codecard{animation:none;box-shadow:none;background:#1a1230;border-color:#3b2d63}
+.module-num,.ic,.av,.tutor-avatar{background:var(--pu);color:var(--on)}
+.feature-icon{background:var(--bg)!important}
+.home-v2 .feature:hover,.home-v2 .module-card:hover{transform:none;border-color:var(--pu)}
+.bar i{background:var(--pu)}
+.ed,.out,pre.st{background:#1a1230}.gut{border-color:#3b2d63}
+.ai-float-toggle{background:var(--pu);color:var(--on);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.ai-floating-top{background:#2e1065}
+.py-page-sign{min-height:0;margin-bottom:6px}
+/* ===== AI ustaz: robot ===== */
+.py-page-sign{min-height:0;margin-bottom:6px}
+.py-robot{display:block;width:230px;max-width:100%;height:auto;filter:none;animation:none}
+.py-robot .rb-body{animation:rb-float 3.4s ease-in-out infinite}
+.py-robot .rb-shadow{transform-box:fill-box;transform-origin:center;animation:rb-shadow 3.4s ease-in-out infinite}
+.py-robot .rb-eyes{transform-box:fill-box;transform-origin:center;animation:rb-blink 4.5s linear infinite}
+.py-robot .rb-ant{animation:rb-ant 1.6s ease-in-out infinite}
+.py-robot .rb-led{animation:rb-ant 2.2s ease-in-out infinite}
+.py-robot .rb-arm-r{transform-box:view-box;transform-origin:146px 92px;animation:rb-wave 1.4s ease-in-out infinite}
+.py-robot .rb-arm-l{transform-box:view-box;transform-origin:104px 92px;animation:rb-sway 3.4s ease-in-out infinite}
+.py-robot .rb-sym{opacity:0;animation:rb-sym 3.6s ease-in infinite}.py-robot .rb-sym.b{animation-delay:1.2s}.py-robot .rb-sym.c{animation-delay:2.4s}
+@keyframes rb-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes rb-shadow{0%,100%{transform:scaleX(1);opacity:.12}50%{transform:scaleX(.82);opacity:.07}}
+@keyframes rb-blink{0%,92%,98%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes rb-ant{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes rb-wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-22deg)}}
+@keyframes rb-sway{0%,100%{transform:rotate(3deg)}50%{transform:rotate(-3deg)}}
+@keyframes rb-sym{0%{opacity:0;transform:translateY(0)}20%{opacity:.9}100%{opacity:0;transform:translateY(-22px)}}
+@media(prefers-reduced-motion:reduce){.py-robot *{animation:none!important}.py-robot .rb-sym{opacity:.7}}
+/* ===== Exam ===== */
+.exam-overlay{position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:auto;user-select:none;-webkit-user-select:none}
+.exam-overlay input[type=text]{user-select:text;-webkit-user-select:text}
+.ex-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--ln);background:var(--card);position:sticky;top:0}.ex-top b{margin-right:auto}
+.ex-chip{border:1px solid var(--ln);border-radius:20px;padding:4px 12px;font-size:14px;font-weight:600}
+.ex-body{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+.ex-dots{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0}
+.ex-dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--ln);background:var(--card);color:var(--ink);cursor:pointer;font:600 13px Manrope,sans-serif}
+.ex-dot.ok{background:color-mix(in srgb,var(--pu) 16%,var(--card))}.ex-dot.on{border:2px solid var(--pu)}
+.exam-warn{position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
+.ex-warn-card{background:var(--card);color:var(--ink);border:1px solid var(--ln);border-radius:16px;padding:26px;max-width:440px}.ex-warn-card h2{margin-top:0}
+
+/* ===== Авторизация ===== */
+#auth-screen{position:fixed;inset:0;z-index:10000;background:rgba(13,16,36,.34);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);display:grid;place-items:center;padding:20px;overflow:auto}
+#auth-screen[hidden]{display:none}
+.auth-card{position:relative;width:min(440px,100%);background:var(--card);border:1px solid var(--ln);border-radius:20px;padding:30px;box-shadow:0 18px 60px #21134a18}
+.auth-close{position:absolute;right:14px;top:12px;border:0;background:var(--bg);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:20px;cursor:pointer}.auth-close:hover{background:var(--ln)} .auth-brand{font-size:25px;font-weight:800;margin-bottom:6px}.auth-brand b{color:var(--pu)}
+.auth-card p{color:var(--mut);margin-top:4px}.auth-field{display:block;margin:15px 0 5px;font-weight:700;font-size:14px}
+.auth-input{width:100%;padding:12px 14px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.auth-error{color:var(--bad);font-size:13px;min-height:20px;margin:9px 0}
+.auth-switch{border:0;background:none;color:var(--pu);font:700 14px Manrope;cursor:pointer;padding:8px 0}
+#auth-logout{border:1px solid var(--ln);background:var(--bg);color:var(--ink);border-radius:10px;padding:7px 11px;cursor:pointer;font:600 13px Manrope}
+@keyframes auth-pop{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}} #auth-screen:not([hidden]) .auth-card{animation:auth-pop .22s ease-out} @media(max-width:600px){.auth-card{padding:22px}}
+</style></head><body>
+<section id="auth-screen" aria-label="Жүйеге кіру">
+ <div class="auth-card">
+  <button class="auth-close" id="auth-close" type="button" aria-label="Жабу">×</button>
+  <div class="auth-brand">AI <b>ustaz</b></div>
+  <h1 id="auth-title">Қош келдіңіз!</h1>
+  <p id="auth-subtitle">Сайтты пайдалану үшін аккаунтыңызға кіріңіз немесе тіркеліңіз.</p>
+  <form id="auth-form" autocomplete="on">
+   <div id="auth-name-wrap" hidden><label class="auth-field" for="auth-name">Аты-жөніңіз</label><input class="auth-input" id="auth-name" autocomplete="name" maxlength="60" placeholder="Аты-жөніңіз"></div>
+   <div id="auth-code-wrap" hidden><label class="auth-field" for="auth-code">Мұғалім коды (оқушыларға керек емес)</label><input class="auth-input" id="auth-code" autocomplete="off" maxlength="64" placeholder="Тек мұғалімдер үшін"></div>
+   <label class="auth-field" for="auth-email">Электрондық пошта</label><input class="auth-input" id="auth-email" name="username" type="email" autocomplete="username" required maxlength="120" placeholder="example@mail.com">
+   <label class="auth-field" for="auth-password">Құпиясөз</label><input class="auth-input" id="auth-password" name="password" type="password" autocomplete="current-password" required minlength="6" maxlength="128" placeholder="Кемінде 6 таңба">
+   <button class="auth-switch" id="auth-password-toggle" type="button" aria-controls="auth-password" aria-pressed="false" style="padding:5px 0">👁 Құпиясөзді көрсету</button>
+   <div class="auth-error" id="auth-error" role="alert"></div>
+   <button class="btn" id="auth-submit" type="submit" style="width:100%">Кіру</button>
+  </form>
+  <button class="auth-switch" id="auth-switch" type="button">Аккаунтыңыз жоқ па? Тіркелу</button>
+  <p style="font-size:12px;margin:12px 0 0">Сайттың оқу бөлімдері ашық. Аккаунттар мен оқу нәтижесі ортақ онлайн дерекқорда сақталады — кез келген құрылғыдан кіре аласың.</p>
+ </div>
+</section>
+<header><a class="logo" href="#home">AI <b>ustaz</b></a>
+<nav id="nav"><a href="#login">Кіру</a><a href="#register">Тіркелу</a><a href="#home">Басты бет</a><a href="#courses">Курстар</a><a href="#practice">Тәжірибе</a><a href="#exam">Емтихан</a><a href="#tutor">🤖 AI-көмекші</a><a href="#ach">Жетістіктер</a><a href="#help">Көмек</a><a href="#admin">Әкімші</a></nav>
+<button id="auth-logout" type="button" hidden>Шығу</button><button id="theme" aria-label="Тақырып режимін ауыстыру" title="Жарық/қараңғы режим" style="border:1px solid #59609c;background:transparent;color:white;border-radius:10px;padding:7px 11px;cursor:pointer">◐</button><a class="pill" id="xpb" href="#profile"></a></header>
+<main id="app"></main>
+<button type="button" class="ai-float-toggle" id="ai-float-toggle" aria-label="AI-көмекшіні ашу" aria-expanded="false" aria-controls="ai-floating"><span aria-hidden="true">🤖</span> AI-көмекші</button>
+<section class="ai-floating" id="ai-floating" aria-label="Барлық беттегі AI-көмекші" hidden>
+ <div class="ai-floating-top"><span style="font-size:26px" aria-hidden="true">🤖</span><div><strong>Python AI-көмекші</strong><small>Қазақ тілінде түсіндіреді · 24/7 қолжетімді интерфейс</small></div><button type="button" id="ai-float-close" aria-label="Чатты жабу">×</button></div>
+ <div class="ai-float-context" id="ai-float-context" aria-live="polite"></div>
+ <div class="ai-float-messages" id="ai-float-messages" role="log" aria-live="polite"></div>
+ <div class="ai-float-compose"><label for="ai-float-input" style="display:block;font-weight:700;font-size:12px;margin-bottom:5px">Сұрағыңды жаз</label><textarea id="ai-float-input" maxlength="2000" placeholder="Мысалы: Осы тақырыпты қарапайым түсіндір..."></textarea><div class="ai-float-actions"><button type="button" class="secondary" id="ai-float-suggest">💡 Кеңес</button><button type="button" id="ai-float-send">➤ Жіберу</button></div><div class="ai-float-status" id="ai-float-status">AI сервері қосылмаса, шектеулі демо түсіндірме көрсетіледі.</div></div>
+</section>
+
+<script>
+const DEF=[
+{t:"Python тіліне кіріспе",l:["Python деген не?|Python — үйренуге жеңіл әрі кең таралған бағдарламалау тілі. Онымен сайт, ойын, бот жасап, деректерді талдауға болады.|print(\"Python — это просто!\")","Орнату және алғашқы бағдарлама|Python тілін python.org сайтынан жүктеп, орнат. Алғашқы бағдарлама экранға сәлемдесу мәтінін шығарады.|print(\"Сәлем, әлем!\")","print() функциясы|print() экранға мәндерді шығарады. Үтірмен бөлінген мәндер арасында бос орын қойылады.|print(\"Мен\", 15, \"жастамын\")","Түсініктемелер|Всё после # — комментарий, Python его игнорирует. Түсініктемелер объясняют код людям.|# бұл түсініктеме\nprint(1 + 1)"],q:["Қай функция экранға мәтін шығарады?;input();print();type();1;print() деректерді экранға шығарады.","Түсініктеме қай таңбадан басталады?;//;#;/*;1;Python тілінде түсініктеме # таңбасынан басталады."]},
+{t:"Айнымалылар және дерек түрлері",l:["Айнымалылар|Айнымалы мәнді белгілі бір атаумен сақтайды. = таңбасы айнымалыға мән меншіктейді.|name = \"Айша\"\nage = 16\nprint(name, age)","int, float, str, bool дерек түрлері|int — бүтін сан, float — бөлшек сан, str — мәтін, bool — True немесе False логикалық мәні.|print(7, 3.5, \"мәтін\", True)","type() функциясы|type() мәннің дерек түрін көрсетеді.|print(type(3.5))","input() функциясы|input() пайдаланушы енгізген мәтінді оқиды және әрқашан str қайтарады. Редактор астындағы өріске енгізу мәндерін жазуға болады.|# name = input()\nname = \"Айша\"\nprint(\"Сәлем,\", name)","Дерек түрін түрлендіру|int(), float(), str() мәнді басқа дерек түріне түрлендіреді.|x = int(\"5\")\nprint(x + 2)"],q:["3.5 мәнінің дерек түрі қандай?;int;float;str;1;Нүктесі бар бөлшек санның түрі — float.","int(\"7\") + 1 нәтижесі қандай?;8;71;Ошибка;0;int мәтінді 7 санына айналдырады, содан кейін 1 қосылады."]},
+{t:"Операторлар",l:["Арифметикалық операторлар|+ - * / ** есептеулерді орындайды. // — бүтін бөлу, % — бөлуден қалған қалдық.|print(7 // 2, 7 % 2, 2 ** 3)","Операторлар сравнения|== != < > <= >= мәндерді салыстырады және True не False нәтижесін қайтарады.|print(5 > 3, 5 == 4)","Логикалық операторлар|and, or, not бірнеше шартты біріктіреді немесе терістейді.|print(True and False, not False)","Операторлар присваивания|+=, -=, *= айнымалының ағымдағы мәнін өзгертеді.|x = 10\nx += 5\nprint(x)"],q:["7 % 3 нәтижесі неге тең?;1;2;0;0;% — бөлуден қалған қалдық: 7 = 2·3 + 1.","5 == 5 өрнегі не қайтарады?;True;False;5;0;Бірдей сандарды салыстыру нәтижесі — True."]},
+{t:"Шартты операторлар",l:["if|if шарты ақиқат болса ғана ішіндегі код орындалады. Код блогы шегініспен жазылады.|x = 5\nif x > 3:\n    print(\"үштен үлкен\")","else|if шарты жалған болғанда else блогы орындалады.|x = 1\nif x > 3:\n    print(\"көп\")\nelse:\n    print(\"аз\")","elif|elif қосымша шартты тексеруге мүмкіндік береді.|x = 5\nif x > 10:\n    print(\"A\")\nelif x > 3:\n    print(\"B\")\nelse:\n    print(\"C\")","Ішкі шарттар|Бір шарттың ішіне екінші шартты қосымша шегініспен жазуға болады.|age = 20\nif age >= 18:\n    if age < 21:\n        print(\"жас ересек\")"],q:["if шартынан кейін қандай белгі қойылады?;Нүктелі үтір;Қос нүкте;Жақшалар {};1;Python тілінде шарттан кейін қос нүкте қойылады.","«Әйтпесе, егер» дегенді қай сөз білдіреді?;elif;elseif;orif;0;Python тілінде бұл — elif."]},
+{t:"Циклдідер",l:["for циклі|for әр элемент үшін әрекетті қайталайды.|for i in range(3):\n    print(i)","while циклі|while шарт ақиқат болғанша әрекетті қайталайды.|n = 3\nwhile n > 0:\n    print(n)\n    n -= 1","range() функциясы|range(a, b) a-дан b−1-ге дейінгі сандарды береді. range(5) — 0…4 сандары.|for i in range(1, 4):\n    print(i)","break және continue|break циклді тоқтатады, continue ағымдағы қадамды өткізіп жібереді.|for i in range(5):\n    if i == 3:\n        break\n    print(i)"],q:["for i in range(4) циклі неше рет орындалады?;3;4;5;1;range(4) — 0, 1, 2, 3: барлығы төрт қайталау.","Қай сөз циклді тоқтатады?;stop;break;exit;1;break циклді дереу аяқтайды."]},
+{t:"Деректер құрылымдары",l:["Тізім (list)|Тізім төртбұрышты жақшаларда реттелген мәндер жиынын сақтайды.|nums = [3, 5, 8]\nnums.append(1)\nprint(nums, len(nums))","Кортеж (tuple)|Кортеж тізімге ұқсайды, бірақ элементтерін өзгертуге болмайды. Дөңгелек жақшамен жазылады.|p = (2, 3)\nprint(p[0])","Жиын (set)|Жиын тек қайталанбайтын мәндерді сақтайды.|print(len(set([1, 2, 2, 3])))","Сөздік (dict)|Сөздік «кілт: мән» жұптарын сақтайды.|d = {\"аты\": \"Айша\"}\nprint(d[\"аты\"])"],q:["Тізім қандай жақшамен жазылады?;();[];{};1;Тізім төртбұрышты жақшамен жазылады.","Сөздік нені сақтайды?;Кілт-мән жұптарын;Тек сандарды;Тек мәтіндік жолдарды;0;Сөздік (dict) хранит пары «ключ: значение»."]},
+{t:"Функциялар",l:["Функция құру|def бірнеше рет шақыруға болатын функцияны анықтайды.|def hello():\n    print(\"Сәлем!\")\n\nhello()","Параметрлер|Параметрлер — это входные данные функции.|def greet(name):\n    print(\"Сәлем,\", name)\n\ngreet(\"Айша\")","return|return функциядан нәтижені қайтарады.|def double(x):\n    return x * 2\n\nprint(double(21))","Лямбда-функция|lambda — атауы жоқ қысқа функция.|sq = lambda x: x * x\nprint(sq(5))"],q:["Нәтижені қайтаратын сөз қайсы?;print;return;give;1;return функция нәтижесін шақырылған орынға қайтарады.","def нені құрады?;Айнымалыны;Функцияны;Циклді;1;def функцияны анықтайды."]},
+{t:"Жолдармен жұмыс",l:["Мәтіндік жолдар|Строка — это мәтін в кавычках. Мәтіндік жолдар можно склеивать знаком +.|print(\"Hello, \" + \"Python\")","Индекстеу|Индекстер 0-ден басталады. Соңғы таңбаға s[-1] арқылы қол жеткізуге болады.|s = \"Python\"\nprint(s[0], s[-1])","Тілімдер|s[a:b] a индексінен b−1 индексіне дейінгі таңбаларды алады.|s = \"Python\"\nprint(s[0:2], s[2:])","Жол әдістері|upper(), lower(), replace() әдістері мәтінді өңдейді.|s = \"python\"\nprint(s.upper(), s.replace(\"p\", \"P\"))"],q:["Алғашқы таңбаның индексі қандай?;0;1;-1;0;Индекстеу начинается с нуля.","\"abc\".upper() нәтижесі қандай?;abc;ABC;Abc;1;upper() барлық әріпті бас әріпке айналдырады."]},
+{t:"Файлдармен жұмыс",l:["Файл ашу|open() файлды ашады. 'r' — оқу, 'w' — жазу режимі.|!with open(\"data.txt\", \"w\") as f:\n    f.write(\"Мысал\")\nwith open(\"data.txt\", \"r\") as f:\n    print(f.read())","Оқу және жазу|read() файл мәтінін оқиды, write() мәтінді файлға жазады.|!f = open(\"note.txt\", \"w\")\nf.write(\"Сәлем!\")\nf.close()","with операторы|with блогы біткен соң файлды автоматты түрде жабады. Бұл қауіпсіздеу.|!with open(\"note.txt\", \"w\") as f:\n    f.write(\"Сәлем!\")\nwith open(\"note.txt\") as f:\n    text = f.read()\nprint(text)"],q:["Файлға жазу үшін қай режим қажет?;'r';'w';'x';1; 'w' — жазу (write) режимі.","with не үшін қажет?;Циклдер үшін;Файлды автоматты түрде жабады;Функциялар үшін;1;with файлды автоматты түрде жабады."]},
+{t:"Объектіге бағытталған бағдарламалау",l:["Класс (class)|Класс — объектілерді жасауға арналған үлгі.|!class Dog:\n    def bark(self):\n        print(\"Әуп!\")","Объект|Объект — кластың нақты данасы. Ол класты шақыру арқылы жасалады.|!class Dog:\n    def bark(self):\n        print(\"Әуп!\")\nd = Dog()\nd.bark()","Конструктор|__init__ объект жасалғанда шақырылып, оның қасиеттерін орнатады.|!class Dog:\n    def __init__(self, name):\n        self.name = name","Мұрагерлік|Туынды класс негізгі кластың әдістерін мұраға алады.|!class Dog:\n    def bark(self):\n        print(\"Әуп!\")\nclass Puppy(Dog):\n    pass\nPuppy().bark()"],q:["Класс деген не?;Объект үлгісі;Циклді;Сан;0;Класс — объектілерді жасауға арналған үлгі.","Конструктор қалай аталады?;__init__;__new__;start;0;__init__ әдісі объект жасалғанда шақырылады."]},
+{t:"Тәжірибелық жобалар",l:["Калькулятор|Екі санды қос, азайт, көбейт және бөл.|a = 12\nb = 4\nprint(a + b, a - b, a * b, a / b)","Викторина|Ойыншының жауабын if шартымен тексер.|answer = \"Python\"\nif answer == \"Python\":\n    print(\"Дұрыс!\")\nelse:\n    print(\"Қате\")","Санды тап|Енгізілген санды жасырылған санмен салыстырып, бағыт беретін кеңес шығар.|secret = 7\nguess = 5\nif guess == secret:\n    print(\"Угадал!\")\nelif guess < secret:\n    print(\"Үлкенірек\")\nelse:\n    print(\"Кішірек\")","Қарапайым тіркелу|Бағдарлама логин мен құпиясөзді сұрап, шартқа сай тексереді.|!login = input(\"Логин: \")\npassword = input(\"Пароль: \")\nif len(password) >= 6:\n    print(\"Тіркелу сәтті өтті\")","Оқушытің орташа бағасы|Циклді бағаларды қосады, содан кейін қосынды бағалар санына бөлінеді.|grades = [5, 4, 5, 3]\ntotal = 0\nfor g in grades:\n    total += g\nprint(total / len(grades))"],q:["Бағалар бағдарламасында цикл не істейді?;Бағаларды қосады;Бағаларды өшіреді;График сызады;0;Циклді по очереди прибавляет каждую оценку к total.","Орташа мән қалай есептеледі?;қосынды * саны;қосынды / саны;қосынды - саны;1;Орташа мән = қосынды / мәндер саны."]}
+];
+const PR=[
+{t:"one",q:"print(type(3.5)) нені шығарады?",o:["<class 'int'>","<class 'float'>","<class 'str'>"],a:1,e:"3.5 — бөлшек сан, яғни float түрі."},
+{t:"multi",q:"bool түріне жататын барлық мәнді таңда.",o:["True","\"False\"","False","0"],a:[0,2],e:"Тырнақшасыз True мен False — bool. Тырнақшада жазылса, str болады."},
+{t:"fill",q:"Экранға мәтін шығаратын функцияны толықтыр: ___(\"Сәлем\").",a:"print",e:"Экранға мәлімет шығару үшін print() қолданылады."},
+{t:"one",q:"Қате бар жолды тап.",c:"x = 5\nif x > 3\n    print(x)",o:["1-жол","2-жол","3-жол"],a:1,e:"if шартынан кейін қос нүкте керек: if x > 3:"},
+{t:"order",q:"Бағдарлама 5 санын шығаратындай жолдарды дұрыс ретте.",it:["print(a + b)","a = 2","b = 3"],a:"a = 2|b = 3|print(a + b)",e:"Алдымен айнымалыларға мән беріп, кейін нәтижені шығарамыз."},
+{t:"fill",q:"print(7 // 2) нені шығарады?",a:"3",e:"// — бүтін бөлу: 7 // 2 = 3."},
+{t:"code",q:"1, 2, 3 сандарын әрқайсысын жаңа жолға шығаратын код жаз.",st:"# өз кодыңды жаз\n",a:"1\n2\n3",e:"Мысалы: for i in range(1, 4): print(i)"}
+];
+// Бұрынғы орысша стандарт модульдер сақталған болса, қазақша нұсқасына автоматты ауыстыру.
+const LV=[["Бастаушы",0],["Ізденуші",100],["Бағдарламашы",300],["Python Master",600]];
+const $=s=>document.querySelector(s);
+let activeUser=localStorage.getItem("pa_current_user")||"";
+const storageKey=k=>k==="pa_st"&&activeUser?"pa_st_user_"+activeUser:k;
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(storageKey(k)))||d}catch(e){return d}},sv=(k,v)=>{try{localStorage.setItem(storageKey(k),JSON.stringify(v))}catch(e){}if(k==="pa_st")queuePush()};
+const emptyProgress=()=>({done:{},ex:{},tests:{},xp:0,days:[],log:[],name:"Оқушы"});
+let st=ld("pa_st",emptyProgress()),M=ld("pa_mods",null)||DEF,ord={};
+try {
+ const oldTitles=["Введение в Python","Переменные и типы данных","Операторы","Условные операторы","Циклы","Структуры данных","Функции","Работа со строками","Работа с файлами","Объектно-ориентированное программирование","Практические проекты"];
+ if(Array.isArray(M)&&M.length===DEF.length&&M.every((m,i)=>m.t===oldTitles[i]&&m.l?.length===DEF[i].l.length&&m.q?.length===DEF[i].q.length)) {M=JSON.parse(JSON.stringify(DEF));sv("pa_mods",M);}
+} catch(e){}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"),TD=()=>new Date().toLocaleDateString("en-CA");
+const lv=()=>{let i=0;LV.forEach((l,n)=>{if(st.xp>=l[1])i=n});return i},dn=()=>Object.keys(st.done).length,tot=()=>M.reduce((n,m)=>n+m.l.length,0);
+const bar=p=>`<div class=bar><i style="width:${Math.max(0,Math.min(100,Number(p)||0))}%"></i></div>`,mp=i=>M[i].l.length?Math.round(M[i].l.filter((_,j)=>st.done[i+"-"+j]).length/M[i].l.length*100):0;
+function touch(msg,xp){st.xp+=xp;const d=TD();if(!st.days.includes(d))st.days.push(d);st.log.unshift([msg+" (+"+xp+" XP)",d]);st.log=st.log.slice(0,6);sv("pa_st",st);hdr()}
+function streak(){let n=0,d=new Date();while(st.days.includes(new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1)}return n}
+function hdr(){$("#xpb").textContent="⭐ "+st.xp+" XP · "+LV[lv()][0]}
+const hl=s=>esc(s).replace(/(#.*)|("[^"]*"|'[^']*')|\b(def|return|if|elif|else|for|while|in|range|print|and|or|not|True|False|None|class|import|break|continue|with|lambda)\b|\b(\d+\.?\d*)\b/g,(m,c,t,k)=>`<i class=${c?"c":t?"s":k?"k":"n"}>${m}</i>`)+"\n";
+const ed=(id,c)=>`<div class=ed data-id=${id} data-init="${esc(c).replace(/"/g,"&quot;")}"><div class=gut></div><div class=wr><pre class=hl></pre><textarea spellcheck=false wrap=off aria-label="Код редакторы">${esc(c)}</textarea></div></div><div class=toolbar><label for="inp-${id}" class=mut>input() үшін деректер (әр жауапты жаңа жолға жаз):</label><textarea id="inp-${id}" rows="2" style="width:100%;padding:8px;border-radius:8px;background:var(--card);color:var(--ink);border:1px solid var(--ln)" placeholder="Мысалы: Айша"></textarea></div><pre class=out id=o-${id}>Python кодын орындау үшін «▶ Кодты іске қосу» батырмасын бас (интернет қажет).</pre><div class=row2><button class=btn data-a=run data-t=${id}>▶ Кодты іске қосу</button><button class="btn ghost" data-a=reset data-t=${id}>Бастапқы күйге қайтару</button></div>`;
+function wire(){document.querySelectorAll(".ed").forEach(e=>{const t=e.querySelector("textarea"),h=e.querySelector(".hl"),g=e.querySelector(".gut");const u=()=>{h.textContent=t.value;g.textContent=t.value.split("\n").map((_,i)=>i+1).join("\n")};u();t.oninput=u;t.onscroll=()=>{h.scrollTop=g.scrollTop=t.scrollTop;h.scrollLeft=t.scrollLeft};t.onkeydown=v=>{if(v.key=="Tab"){v.preventDefault();t.setRangeText("    ",t.selectionStart,t.selectionEnd,"end");u()}};e.u=u})}
+function showOut(id,o){const e=$("#o-"+id);e.className="out"+(o.err?" err":"");e.textContent=(o.text||"")+(o.err?"Қате: "+o.err:"")||"(бағдарлама ештеңе шығармады)"}
+const fmt=v=>v===true?"True":v===false?"False":v==null?"None":Array.isArray(v)?"["+v.map(x=>typeof x=="string"?"'"+x+"'":fmt(x)).join(", ")+"]":String(v);
+// Выполнение настоящего Python внутри отдельного Web Worker (Pyodide / WebAssembly).
+// Код пользователя не запускается как JavaScript страницы.
+const PYODIDE_CDN="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/";
+const workerCode=`
+let pyodide;
+self.onmessage=async event=>{
+ try{
+  importScripts("${PYODIDE_CDN}pyodide.js");
+  pyodide=await loadPyodide({indexURL:"${PYODIDE_CDN}"});
+  const {code,inputs}=event.data;
+  let output="",errors="";
+  pyodide.setStdout({batched:s=>{output+=s+"\\n"}});
+  pyodide.setStderr({batched:s=>{errors+=s+"\\n"}});
+  pyodide.globals.set("_academy_inputs",inputs);
+  await pyodide.runPythonAsync("import builtins\\n_academy_queue = iter(_academy_inputs.to_py())\\ndef _academy_input(prompt=''):\\n    print(prompt, end='')\\n    try:\\n        value = next(_academy_queue)\\n    except StopIteration:\\n        raise EOFError('input() үшін дерек берілмеді. Редактордың астына енгізілетін жолдарды жаз.')\\n    print(value)\\n    return str(value)\\nbuiltins.input = _academy_input\\n");
+  try{await pyodide.runPythonAsync(code)}catch(e){errors+=String(e)+"\\n"}
+  self.postMessage({text:output,err:errors.trim()});
+ }catch(e){self.postMessage({text:"",err:"Python жүктелмеді: "+String(e)+". Интернет байланысын тексеріңіз."})}
+};`;
+const running=new Map();
+function runPy(src,id="lc",inputs=""){
+ return new Promise(resolve=>{
+  let worker;
+  try{const workerUrl=URL.createObjectURL(new Blob([workerCode],{type:"text/javascript"}));worker=new Worker(workerUrl);URL.revokeObjectURL(workerUrl);}
+  catch(e){resolve({text:"",err:"Браузеріңіз Python іске қосуды қолдамайды: "+e.message});return}
+  const token=setTimeout(()=>{worker.terminate();running.delete(id);resolve({text:"",err:"Орындау тоқтатылды: 30 секунд шегінен асты. Шексіз цикл жоқ па, тексер."})},30000);
+  running.set(id,worker);
+  worker.onmessage=e=>{clearTimeout(token);worker.terminate();running.delete(id);resolve(e.data)};
+  worker.onerror=e=>{clearTimeout(token);worker.terminate();running.delete(id);resolve({text:"",err:"Python ортасын іске қосу қатесі. Интернет байланысы қажет."})};
+  worker.postMessage({code:src,inputs:inputs?inputs.split("\n"):[]});
+ });
+}
+async function execute(id){const e=document.querySelector(`.ed[data-id="${id}"]`);if(!e)return;
+ const b=document.querySelector(`[data-a="run"][data-t="${id}"]`);
+ const src=e.querySelector("textarea").value, inp=document.querySelector(`#inp-${id}`)?.value||"";
+ if(b){b.disabled=true;b.textContent="⏳ Python іске қосылуда..."}
+ showOut(id,{text:"Python жүктеліп, код орындалуда..."});
+ const o=await runPy(src,id,inp);
+ if(b){b.disabled=false;b.textContent="▶ Кодты іске қосу"}
+ if(document.querySelector(`#o-${id}`))showOut(id,o);
+ return o;
+}
+
+/* ---------- Learning assistant: local guides + optional server model ---------- */
+const GUIDES={
+ 'print':{title:'print() — экранға шығару',why:'print() мәтінді немесе санды экранға шығарады.',steps:['print сөзін жаз.','Жақша аш: print(','Тырнақшаға мәтін енгіз: "Сәлем!"','Жақшаны жауып, ▶ батырмасын бас.'],example:'print("Сәлем, Python!")'},
+ 'variable':{title:'Айнымалылар',why:'Айнымалы — мәнді сақтайтын атау.',steps:['Айнымалыға атау бер: age','Теңдік арқылы мән сақта: age = 15','print(age) арқылы нәтижені көрсет.'],example:'age = 15\nprint(age)'},
+ 'if':{title:'if / else шарттары',why:'if шарты True болса, ішіндегі код орындалады.',steps:['if сөзінен кейін шарт жаз.','Шарттың соңына : белгісін қой.','Келесі жолға 4 бос орынмен код жаз.','else: арқылы басқа жағдайды көрсет.'],example:'x = 5\nif x > 3:\n    print("Үлкен")\nelse:\n    print("Кіші")'},
+ 'for':{title:'for циклі',why:'Циклді бір әрекетті бірнеше рет орындайды.',steps:['for i in range(3): деп жаз.','Келесі жолда 4 бос орын қалдыр.','print(i) деп жаз.','Іске қосып, 0,1,2 шыққанын тексер.'],example:'for i in range(3):\n    print(i)'},
+ 'function':{title:'Функциялар',why:'def арқылы қайталанатын кодты бір атпен сақтайсың.',steps:['def hello(): деп баста.','Функция денесін шегініспен жаз.','hello() деп шақыр.'],example:'def hello():\n    print("Сәлем!")\nhello()'},
+ 'list':{title:'Тізімдер',why:'list — бірнеше мәнді бір жерде сақтау тәсілі.',steps:['nums = [1, 2, 3] деп жаз.','Элементке индекс арқылы жүгін: nums[0].','append() арқылы жаңа элемент қос.'],example:'nums = [1, 2, 3]\nnums.append(4)\nprint(nums)'},
+ 'input':{title:'input() арқылы мәлімет енгізу',why:'input() пайдаланушы енгізген мәнді жол (str) ретінде алады.',steps:['name = input("Атың: ") деп жаз.','Редактор астындағы input алаңына бір жауап жаз.','print(name) арқылы экранға шығар.'],example:'name = input("Атың: ")\nprint("Сәлем,", name)'},
+ 'general':{title:'Python тапсырмасын орындау',why:'Кодты кіші қадамдарға бөліп тексеру оңай.',steps:['Тапсырманың не сұрайтынын оқы.','Қажетті айнымалыларды жаз.','Негізгі шарт немесе циклді құр.','print() арқылы нәтижені тексер.','Қате шықса, оның жол нөмірін және мәтінін оқы.'],example:'print("Python дайын!")'}
+};
+const PRACTICE_GUIDES=[
+ {goal:'3.5 санының типін табу.',steps:['type() функциясы мәннің типін көрсетеді.','Бүтін және бөлшек сандардың айырмасын еске түсір.','Нұсқалардың біреуін таңда.'],hint:'3.5 — нүктесі бар сан.'},
+ {goal:'bool типіне жататын барлық мәндерді табу.',steps:['True және False — Python-дағы логикалық мәндер.','Тырнақша бар-жоғын тексер.','Бірнеше дұрыс жауап болуы мүмкін.'],hint:'Тырнақшадағы False — str, bool емес.'},
+ {goal:'Мәтінді экранға шығаратын функция атын жазу.',steps:['Жолды экранға шығаратын функцияны еске түсір.','Тек оның атауын, жақшасыз енгіз.'],hint:'Бұл функция p әрпінен басталады.'},
+ {goal:'Кодтағы синтаксистік қатені анықтау.',steps:['Әр жолдың жазылуын салыстыр.','if шартынан кейін қандай белгі тұратынын тексер.','Қате орналасқан жолды таңда.'],hint:'if жолының соңын тексер.'},
+ {goal:'Код жолдарын дұрыс ретке келтіру.',steps:['Алдымен мән беріжастамынін айнымалыларды таңда.','Содан кейін нәтиже шығаратын жолды бас.','Қажет болса «Қайтадан» батырмасын бас.'],hint:'print жолы соңында келеді.'},
+ {goal:'Бүтін бөлудің нәтижесін табу.',steps:['// бүтін бөлу амалы екенін еске түсір.','7 санын 2-ге бөліп, бүтін бөлігін ал.','Жауапты сан түрінде жаз.'],hint:'// қалдықты есептемейді.'},
+ {goal:'1, 2 және 3 сандарын бөлек жолдарға шығару.',steps:['for циклі мен range() функциясын қолдан.','range(1, 4) қандай сандар беретінін түсін.','Циклді ішінде 4 бос орынмен print(i) жаз.','Кодты іске қосып, үш жол шыққанын тексер.'],hint:'for i in range(1, 4): түрінен баста.'}
+];
+function topicGuide(text){let a=String(text||'').toLowerCase();if(/input|ввод|енгіз/.test(a))return GUIDES.input;if(/print|вывод|экран|шығар/.test(a))return GUIDES.print;if(/цикл|range|while|for\b/.test(a))return GUIDES.for;if(/if\b|else|шарт|услов/.test(a))return GUIDES.if;if(/функц|def\b|return/.test(a))return GUIDES.function;if(/спис|тізім|list|append/.test(a))return GUIDES.list;if(/перемен|айнымал|тип|int|float/.test(a))return GUIDES.variable;return GUIDES.general}
+function currentTopic(){if(location.hash==="#tutor"&&sessionStorage.getItem("academy_ai_topic"))return sessionStorage.getItem("academy_ai_topic");let h=location.hash.slice(1),m=h.match(/^lesson\/(\d+)-(\d+)/);if(m&&M[+m[1]]?.l[+m[2]])return M[+m[1]].l[+m[2]].split('|').slice(0,2).join(' — ');let p=h.match(/^practice/);if(p)return 'Python практикалық тапсырмалар';return 'Python-ды нөлден үйрену'}
+function codeFromPage(){const t=document.querySelector('.ed textarea');return t?t.value.slice(0,3000):(sessionStorage.getItem("academy_ai_code")||"").slice(0,3000)}
+function lastError(){const o=document.querySelector('.out.err');return o?o.textContent.slice(0,1200):(sessionStorage.getItem("academy_ai_error")||"").slice(0,1200)}
+function localExplain(question,context,code,err){let q=String(question||'').toLowerCase();let gd=topicGuide(question+' '+context+' '+code);if(/python деген не|что такое python|python-ды|пайтон деген/.test(q))return 'Python — бағдарламалау тілі. Онымен қарапайым есептерді, сайттарды және түрлі бағдарламаларды жасауға болады.\n\n1. Код жазылады.\n2. Python оны орындайды.\n3. Нәтиже экранда шығады.\n\nМысал:\nprint("Сәлем, әлем!")\n\nБұл команда экранға «Сәлем, әлем!» сөзін шығарады.';
+ if(/көмектес|түсіндір|подсказ|hint/.test(q)&&/ошибка|қате|error/.test(q)&&!err&&!code)return 'Қатені бірге қарастырайық.\n\n1. «Курстар» немесе «Тәжірибе» бөлімінде редакторды аш.\n2. Python кодын жазып, іске қос.\n3. Қате шыққан соң AI-көмекші бетіне қайт.\n4. Немесе қате мәтінін сұраққа көшіріп жаз.\n\nКодты көрмей, нақты қате себебін айту мүмкін емес.';
+ if(/syntaxerror|синтаксис|қате|ошибка|error|traceback|түзет/.test(q+' '+err)){
+ const x=String(err||'');if(/IndentationError|expected an indented block|unexpected indent/i.test(x))return 'Қате: шегініс дұрыс емес.\n1. if, for, while немесе def жолынан кейін : қой.\n2. Келесі жолды 4 бос орынмен баста.\n3. Бір блокта бос орын санын бірдей пайдалан.';
+ if(/NameError|not defined/i.test(x))return 'Қате: атау табылмады.\n1. Айнымалыны қолданар алдында мән бер.\n2. Әріптерді және бас/кіші әріптерін салыстыр.\n3. Мысалы, age = 15; print(age).';
+ if(/SyntaxError|invalid syntax/i.test(x))return 'Қате: синтаксис.\n1. Жақша мен тырнақшаның жұбын тексер.\n2. if/for/while/def соңында : бар ма?\n3. Қате көрсетілген жолдан бұрынғы жолды да тексер.';
+ if(/ZeroDivisionError/i.test(x))return 'Қате: нөлге бөлуге болмайды.\n1. Бөлгішті тексер.\n2. Бөлгіш 0 болса, есептеуді орындама.\n3. if b != 0: шартын қолдан.';
+ return 'Қателерді табу тәсілі:\n1. Қате хабарламасындағы жол нөмірін қара.\n2. Жақша, тырнақша, қос нүкте және шегіністі тексер.\n3. Алдымен бір жолды түзетіп, қайта іске қос.';}
+ if(/мысал|пример|example/.test(q))return gd.title+'\n\nМысал:\n'+gd.example.replace(/\\n/g,'\n')+'\n\nКодты редакторға енгізіп, ▶ бас.';
+ return gd.title+'\n\n'+gd.why+'\n\n'+gd.steps.map((v,i)=>(i+1)+'. '+v).join('\n')+'\n\nҚажет болса «Мысал көрсет» деп жаз.';
+}
+async function askTutor(question){
+ const context=currentTopic(),code=codeFromPage(),error=lastError();
+ const history=tutorMessages.filter((m,i)=>i>0&&i<tutorMessages.length-2).slice(-10).map(m=>({role:m.role==='bot'?'assistant':'user',content:m.text})).filter(m=>m.role==='user'||m.role==='assistant');
+ try{
+  const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question,context,code,error,history})});
+  const data=await r.json();
+  if(r.ok&&typeof data.answer==='string'&&data.answer.trim())return {answer:data.answer,mode:'🟢 Нақты AI қосулы'};
+  if(r.status===503)return {answer:localExplain(question,context,code,error)+'\n\n⚠️ Бұл — шектеулі демо жауабы. Кез келген сұраққа толық AI жауабы үшін Flask серверінде OPENAI_API_KEY қажет.',mode:'🟡 Демо режим (AI қосылмаған)'};
+  return {answer:'⚠️ Нақты AI жауап бере алмады: '+(data.error||'Белгісіз қате')+'\nСервер мен API баптауларын тексер.',mode:'🔴 AI қатесі'};
+ }catch(e){return {answer:localExplain(question,context,code,error)+'\n\n⚠️ Бұл — шектеулі жергілікті жауап. Нақты AI үшін сайтты Flask арқылы аш: http://127.0.0.1:5000',mode:'🟡 Офлайн демо режим'};}
+}
+async function refreshAIStatus(){const label=document.getElementById('aimode');if(!label)return;try{const r=await fetch('/api/status');const d=await r.json();label.textContent=d.ai_configured?'🟢 Нақты AI қосылған':'🟡 Демо режим — API кілті жоқ'}catch(e){label.textContent='🟡 Офлайн демо режим'}}
+const tutorChatKey=()=>`pa_chat_${activeUser||'guest'}`;
+function loadTutorChat(){try{const a=JSON.parse(localStorage.getItem(tutorChatKey())||'[]');return Array.isArray(a)?a.filter(x=>x&&['user','bot'].includes(x.role)&&typeof x.text==='string').slice(-60):[]}catch(e){return []}}
+const tutorMessages=loadTutorChat();
+function saveTutorChat(){try{localStorage.setItem(tutorChatKey(),JSON.stringify(tutorMessages.slice(-60)))}catch(e){}}
+function tutorMarkupMessage(m){return `<div class="tutor-message ${m.role==='user'?'user':'bot'}"><span class="tutor-avatar" aria-hidden="true">${m.role==='user'?'👤':'🤖'}</span><div class="tutor-bubble"><span class="tutor-author">${m.role==='user'?'Сен':'Python көмекшісі'}</span>${esc(m.text)}</div></div>`}
+function drawTutorMessages(){const box=$('#tutormessages');if(!box)return;box.innerHTML=tutorMessages.map(tutorMarkupMessage).join('');box.scrollTop=box.scrollHeight;if(typeof drawFloatMessages==='function')drawFloatMessages()}
+function pushTutorMessage(role,text){tutorMessages.push({role,text:String(text)});if(tutorMessages.length>60)tutorMessages.splice(0,tutorMessages.length-60);saveTutorChat();drawTutorMessages()}
+const tutor=()=>`<section class="tutor-page"><div class="tutor-hero"><h1>🤖 Python AI-көмекші</h1><p>Python, математика, оқу және күнделікті тақырыптар туралы кез келген сұрақты қой. Нақты AI қосылса, көмекші еркін жауап береді және алдыңғы әңгімені есте ұстайды.</p></div><div class="tutor-layout"><section class="tutor-main" aria-label="Көмекшімен сөйлесу"><div class="tutor-meta"><span class="tutor-status" id="aimode">AI байланысы тексерілуде…</span><span class="mut" style="font-size:13px">Кез келген тақырыпта сұра. Нақты AI үшін Flask + API кілті қажет</span></div><div class="tutor-chat" id="tutormessages" role="log" aria-live="polite"></div><div class="tutor-quick" aria-label="Дайын сұрақтар"><button type="button" data-a="sample" data-q="Python деген не? Қарапайым түсіндір">📘 Python деген не?</button><button type="button" data-a="sample" data-q="for циклі қалай жұмыс істейді?">🔁 for циклі</button><button type="button" data-a="sample" data-q="if else шартын қадамдап түсіндір">🔀 if / else</button><button type="button" data-a="sample" data-q="Мысал көрсет">💻 Код мысалы</button><button type="button" data-a="sample" data-q="Кодтағы қатені түзетуге көмектес">🛠 Код қатесі</button></div><div class="tutor-compose"><label for="aiquestion">Кез келген сұрағыңды жаз</label><textarea id="aiquestion" maxlength="2000" placeholder="Мысалы: Python деген не? Немесе: Ньютонның заңдарын түсіндір, шығармаға жоспар құрастыр..."></textarea><div class="tutor-actions"><button class="btn" data-a="ask" id="aisend">➤ Жіберу</button><button class="btn ghost" data-a="copyai" type="button">📋 Соңғы жауапты көшіру</button><button class="btn ghost" data-a="clearchat" type="button">🗑 Чатты тазалау</button></div><p class="tutor-note">Enter — жіберу · Shift+Enter — жаңа жол. AI серверге қосылмаған кезде шектеулі демо режим жұмыс істейді; барлық сұраққа жауап алу үшін API баптаңыз.</p></div></section><aside class="tutor-side"><h3>📖 Қалай қолданасың?</h3><ol class="tutor-steps"><li>Тақырыпты немесе қатені қысқаша жаз.</li><li>«Жіберу» батырмасын бас.</li><li>Жауаптағы қадамдарды орында.</li><li>Мысалды Python редакторында тексер.</li></ol><h3>🎯 Қазіргі тақырып</h3><div class="tutor-context"><b>Сабақ/тапсырма:</b><span id="tutor-context-label">${esc(currentTopic())}</span></div><h3 style="margin-top:20px">🧩 Код конмәтіні</h3><div class="tutor-context"><div class="tutor-code" id="tutor-code-preview">${esc(codeFromPage()||'Әзірше код жоқ. Сабақта код жазып, осы бетке өт.')}</div></div><p class="mut" style="margin-top:18px">Бұл бөлім оқуға көмектеседі. Нақты AI қосылмаған кезде тек шектеулі жергілікті түсіндірмелер қолжетімді.</p></aside></div></section>`;
+function tutorPageReady(){if(!$('#tutormessages'))return;if(!tutorMessages.length)pushTutorMessage('bot','Сәлем! 👋 Мен кез келген тақырыптағы сұрақтарға жауап беруге арналған көмекшімін. Нақты AI жұмыс істеуі үшін серверге API кілтін орнату қажет.\n\nТөмендегі дайын сұрақты таңда немесе өз сұрағыңды жаз. Мысалы: «for циклі қалай жұмыс істейді?»');else drawTutorMessages();refreshAIStatus()}
+
+
+/* ---------- страницы ---------- */
+const cards=()=>`<div class=grid>`+M.map((m,i)=>`<a class=card href="#course/${i}"><div class=ic>${i+1}</div><h3>${esc(m.t)}</h3><p>${m.l.length} сабақ · тест</p>${bar(mp(i))}<small class=mut>Аяқталды: ${mp(i)}%</small></a>`).join("")+`</div>`;
+const home=()=>{
+ const first=M.findIndex((m,i)=>m.l.some((_,j)=>!st.done[i+"-"+j]));
+ const nextCourse=first<0?0:first;
+ const nextLesson=first<0?0:M[first].l.findIndex((_,j)=>!st.done[first+"-"+j]);
+ const nextLink=first<0?"#courses":"#lesson/"+nextCourse+"-"+nextLesson;
+ const complete=tot()?Math.round(dn()/tot()*100):0;
+ return `<div class="home-v2">
+ <section class="home-hero"><div>
+ <span class="hero-kicker">✦ Қазақ тіліндегі бағдарламалау платформасы</span>
+ <h1>Python үйренуді <em>бүгін баста!</em></h1>
+ <p>Қарапайым сабақтар, интерактивті код редакторы және AI-көмекші. Алғашқы бағдарламаңнан жеке жобаңа дейін бір қадамнан үйрен.</p>
+ <div class="home-actions"><a class="btn home-primary" href="${nextLink}">${dn()?"▶ Оқуды жалғастыру":"🚀 Алғашқы сабақты бастау"}</a><a class="btn home-secondary" href="#tutor">🤖 AI-көмекшіге сұрақ қою</a></div>
+ <div class="hero-note"><span>✓ Қазақша сабақтар</span><span>✓ Тапсырмалар мен тесттер</span><span>✓ Прогрессің сақталады</span></div>
+ </div><div class="hero-preview" aria-label="Python бағдарламасының үлгісі"><div class="preview-bar"><span class="preview-dots"><i></i><i></i><i></i></span><span>алғашқы_бағдарлама.py</span><span>Python 3</span></div><div class="preview-code"><span class="comment"># Python тіліндегі алғашқы қадам</span>
+<span class="kw">name</span> = <span class="str">"Досым"</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(3):
+    print(<span class="str">"Сәлем, "</span> + name + <span class="str">"!"</span>)</div><div class="preview-output">❯ Нәтиже:
+Сәлем, Досым!
+Сәлем, Досым!
+Сәлем, Досым!</div></div></section>
+ <div class="home-metrics" aria-label="Платформа көрсеткіштері"><div class="metric"><strong>${M.length}</strong><span>оқу модулі</span></div><div class="metric"><strong>${tot()}</strong><span>сабақ</span></div><div class="metric"><strong>${PR.length}</strong><span>тәжірибелік тапсырма</span></div><div class="metric"><strong>${complete}%</strong><span>сенің оқу үлгерімің</span></div></div>
+ <section><div class="section-heading"><div><span class="tag">НЕГЕ БІЗ?</span><h2>Үйренудің ыңғайлы жолы</h2><p>Теорияны оқы, тәжірибе жаса, түсінбегеніңді сұра.</p></div></div>
+ <div class="feature-grid"><a class="feature" href="#courses"><span class="feature-icon">📚</span><b>Қадамдық сабақтар</b><p>Python негіздерін жеңіл тілмен, қысқа мысалдар арқылы меңгер.</p><span class="more">Сабақтарды қарау →</span></a><a class="feature" href="#practice"><span class="feature-icon">💻</span><b>Кодпен тәжірибе</b><p>Тапсырмалар орындап, жауабыңды бірден тексер.</p><span class="more">Тәжірибеге өту →</span></a><a class="feature" href="#tutor"><span class="feature-icon">🤖</span><b>AI-көмекші</b><p>Түсініксіз тақырыпты сұра және код қатесін талда. Толық AI үшін сервер қажет.</p><span class="more">Сұрақ қою →</span></a></div></section>
+ <section><div class="section-heading"><div><span class="tag">ОҚУ БАҒДАРЛАМАСЫ</span><h2>Алғашқы модульдер</h2><p>Өзіңе ыңғайлы қарқынмен білім ал.</p></div><a href="#courses">Барлық модульдер →</a></div>
+ <div class="module-grid">${M.slice(0,6).map((m,i)=>`<a class="module-card" href="#course/${i}"><div class="module-top"><span class="module-num">${i+1}</span><span>${m.l.length} сабақ</span></div><h3>${esc(m.t)}</h3>${bar(mp(i))}<span class="module-top"><span>${mp(i)}% аяқталды</span><span class="module-go">Ашу →</span></span></a>`).join("")}</div></section>
+ <section class="home-banner"><div><h2>Оқуға дайынсың ба?</h2><p>Бүгін бір сабақтан баста — кішкентай қадам да нәтиже береді.</p></div><a class="btn" href="${nextLink}">${dn()?"Сабақты жалғастыру →":"Бірінші сабаққа өту →"}</a></section>
+ </div>`;
+};
+const courses=()=>`<h1>Курстар</h1><p class=mut>«Жаңадан бастаушыларға арналған Python» курсы: ${M.length} модуль. Модульді таңда.</p>${cards()}`;
+const course=i=>{const m=M[i];return `<a href="#courses">← Барлық курстар</a><h1>Модуль ${i+1}. ${esc(m.t)}</h1>${bar(mp(i))}`+m.l.map((x,j)=>`<a class=row href="#lesson/${i}-${j}"><span class=ic>${j+1}</span>${esc(x.split("|")[0])}<span class=s>${st.done[i+"-"+j]?"✓":""}</span></a>`).join("")+`<a class=row href="#test/${i}"><span class=ic>?</span>Модуль бойынша тест<span class=s>${st.tests[i]!=null?st.tests[i]+"%":""}</span></a>`};
+const lesson=(i,j)=>{const m=M[i],[t,th,code]=m.l[j].split("|"),k=i+"-"+j,nx=j+1<m.l.length?`#lesson/${i}-${j+1}`:`#test/${i}`;return `<a href="#course/${i}">← ${esc(m.t)}</a><h1>${esc(t)}</h1><p class=card2><b>Мақсат:</b> тақырыбын түсініп, оны кодта қолдану «${esc(t)}» .</p><h3>Теория</h3><p>${esc(th)}</p><h3>Код мысалы</h3>${ed("lc",code.startsWith("!")?code.slice(1):code)+`<p class=mut>Кодты өзгертіп, қайта іске қос. Файлдар браузердегі уақытша Python ортасында жасалады.</p>`}<div class=guide><span class=ai-tag>📌 Тәжірибе</span><h3>Өзің орындап көр</h3><p>1. Мысалдағы кодты оқы. 2. Бір мәнді өзгертіп көр. 3. ▶ басып нәтижені салыстыр. 4. Қате шықса, AI-көмекшіден түсіндірме сұра.</p><div class=row2><a class="btn ghost" href="#tutor">🤖 AI арқылы түсіндіру</a></div></div><h3>Қорытынды</h3><p>Сен мына тақырыпты меңгердің: «${esc(t)}».</p><div class=row2><button class=btn data-a=done data-k="${k}" data-t="${esc(t)}">${st.done[k]?"✓ Сабақ аяқталды":"Сабақты аяқтау (+10 XP)"}</button><a class="btn ghost" href="${nx}">${j+1<m.l.length?"Келесі сабақ →":"Модуль тестіне →"}</a></div>`};
+const test=i=>{const m=M[i];if(!m.q||!m.q.length)return `<a href="#course/${i}">← ${esc(m.t)}</a><h1>Тест</h1><p>Бұл модульге тест әлі қосылмаған.</p>`;return `<a href="#course/${i}">← ${esc(m.t)}</a><h1>Тест: ${esc(m.t)}</h1><p class=mut>Өту үшін кемінде 70% жинау қажет.</p><div class="ai-test-note">🤖 AI-көмекші осы бақылауда да қолжетімді. Ол ережені түсіндіреді, бірақ тесттің дайын жауаптарын көрсетпейді.</div>`+m.q.map((q,n)=>{const p=q.split(";");return `<div class=card2><b>${n+1}. ${esc(p[0])}</b>${p.slice(1,4).map((o,k)=>`<label class=opt><input type=radio name=q${n} value=${k}>${esc(o)}</label>`).join("")}<div class=ex id=ex${n} hidden></div></div>`}).join("")+`<button class=btn data-a=tsub data-i=${i}>Тестті тексеру</button><div id=tres></div>`};
+const TL={one:"Бір дұрыс жауап",multi:"Бірнеше дұрыс жауап",fill:"Бос орынды толтыр",order:"Жолдардың ретін анықта",code:"Код жаз"};
+const practice=()=>`<h1>Тәжірибе</h1><p class=mut>Орындалғаны: ${Object.keys(st.ex).length}  / ${PR.length}. Әр тапсырмаға 15 XP беріледі. Қателессең, қайта орындап көр.</p>`+PR.map((e,i)=>{let b="";if(e.t=="one"||e.t=="multi")b=e.o.map((o,k)=>`<label class=opt><input type=${e.t=="one"?"radio":"checkbox"} name=e${i} value=${k}>${esc(o)}</label>`).join("");else if(e.t=="fill")b=`<input type=text id=f${i} aria-label="Жауап">`;else if(e.t=="order")b=`<div class=row2>`+e.it.map(x=>`<button class="btn ghost" data-a=pick data-i=${i} data-v="${esc(x)}">${esc(x)}</button>`).join("")+`<button class=btn data-a=clr data-i=${i}>Қайтадан</button></div><pre class=st id=or${i}>(бос)</pre>`;else b=ed("p"+i,e.st);return `<div class=card2><span class=tag>${e.c?"Қатені тап":TL[e.t]}</span> <span class=mut>${st.ex[i]?"✓ шешілді":""}</span><p><b>${i+1}. ${esc(e.q)}</b></p><div class=guide><b>Мақсат:</b> ${esc(PRACTICE_GUIDES[i].goal)}<details><summary>📖 Қадамдық нұсқаулық</summary><ol class=steps>${PRACTICE_GUIDES[i].steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></details><button class="btn ghost" data-a=hint data-i=${i} style="margin-top:10px">💡 Кеңес алу</button><div id=hint${i} class=ex hidden></div></div>${e.c?`<pre class=st>${esc(e.c)}</pre>`:""}${b}<div class=row2><button class=btn data-a=chk data-i=${i}>Тексеру</button></div><div id=r${i}></div></div>`}).join("");
+const BG=[["🚀 Алғашқы қадам","1 сабақ аяқталды",()=>dn()>=1],["📚 Ынталы оқушы","5 сабақ аяқталды",()=>dn()>=5],["⭐ 100 XP","100 XP жиналды",()=>st.xp>=100],["✅ Тест тапсырылды","Алғашқы тест тапсырылды",()=>Object.values(st.tests).some(v=>v>=70)],["💪 Тәжірибелі","Барлық тапсырма орындалды",()=>Object.keys(st.ex).length>=PR.length],["🔥 3 күндік белсенділік","Үш күн қатарынан",()=>streak()>=3]];
+const badges=()=>BG.map(b=>`<span class="bd ${b[2]()?"":"off"}" title="${b[1]}">${b[0]}<br><small class=mut>${b[1]}</small></span>`).join("");
+const lead=()=>[["Алия К.",1240],["Данияр С.",980],["Мария П.",760],["Тимур Б.",540],["Сабина Н.",320],[st.name+" (сен)",st.xp]].sort((a,b)=>b[1]-a[1]).map((r,n)=>`<tr><td>${n+1}</td><td>${esc(r[0])}</td><td>${r[1]} XP</td></tr>`).join("");
+const certOk=()=>M.length>0&&M.every((m,i)=>m.l.length>0&&m.l.every((_,j)=>st.done[i+"-"+j])&&m.q&&m.q.length>0&&st.tests[i]>=70);
+const ach=()=>`<h1>Жетістіктер</h1><div>${badges()}</div><h2>Рейтинг (үлгі деректер)</h2><div class="card2 wide"><table><tr><th>#</th><th>Оқушы</th><th>Ұпай</th></tr>${lead()}</table></div>`;
+const help=()=>`<section class="help-hub">
+<style>
+.help-hub{max-width:1000px;margin:auto}.help-hero{padding:24px;border:1px solid var(--ln);border-radius:16px;background:var(--card);margin:12px 0 18px}.help-hero h1{margin:0 0 7px}.help-search{width:100%;padding:14px 16px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;margin-top:14px}.help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:14px 0}.help-action{border:1px solid var(--ln);border-radius:14px;padding:16px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit}.help-action:hover{border-color:var(--pu);background:var(--bg)}.help-action b{display:block;margin:5px 0}.help-action small{color:var(--mut)}.help-result{padding:14px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);margin:12px 0;white-space:pre-wrap}.help-faq details{margin:9px 0}.help-faq summary{cursor:pointer;padding:12px;font-weight:700}.help-faq details p{padding:0 14px 12px;margin:0;color:var(--mut)}.help-code{background:#1a1230;color:#e9e4ff;padding:14px;border-radius:10px;white-space:pre-wrap;font:13px/1.6 'Fira Code',monospace;overflow:auto}.help-toolrow{display:flex;gap:8px;flex-wrap:wrap}.help-hub .btn{margin:3px 0}
+</style>
+<div class="help-hero"><span class="tag">AI ustaz · Қолдау орталығы</span><h1>Көмек орталығы</h1><p class="mut">Сұрағыңа жауап тап, мәселені анықта немесе қажетті бөлімге бірден өт.</p><input class="help-search" id="help-search" type="search" placeholder="🔎 Мысалы: код іске қосылмайды, пароль, тест..." aria-label="Көмектен іздеу"></div>
+<h2>⚡ Жылдам әрекеттер</h2><div class="help-grid">
+<button class="help-action" data-a="help-go" data-href="#courses"><span>📚</span><b>Оқуды бастау</b><small>Курстар мен сабақтарды ашу</small></button>
+<button class="help-action" data-a="help-go" data-href="#practice"><span>💻</span><b>Кодты тексеру</b><small>Редакторға өтіп, Python кодын орындау</small></button>
+<button class="help-action" data-a="help-go" data-href="#tutor"><span>🤖</span><b>AI-көмекшіден сұрау</b><small>Тақырыпты немесе қатені түсіндіру</small></button>
+<button class="help-action" data-a="help-go" data-href="#profile"><span>📊</span><b>Үлгерімді көру</b><small>Ұпай, деңгей және оқу нәтижесі</small></button>
+<button class="help-action" data-a="help-go" data-href="#exam"><span>📝</span><b>Емтихан ережелері</b><small>Тапсыру тәртібі мен нәтижелер</small></button>
+<button class="help-action" data-a="help-go" data-href="#ach"><span>🏆</span><b>Жетістіктер</b><small>Белгілер мен рейтинг</small></button>
+</div>
+<h2>🧰 Мәселені анықтау</h2><div class="card2"><p>Қандай қиындық болып тұр? Таңдасаң, нақты қадамдар көрсетемін.</p><div class="row2"><select id="help-problem" style="flex:1;min-width:220px"><option value="">Мәселені таңда...</option><option value="code">Код іске қосылмайды немесе қате шығады</option><option value="pyodide">Python ортасы жүктелмейді</option><option value="lesson">Сабақ аяқталмай жатыр</option><option value="test">Тест нәтижесі сақталмады</option><option value="progress">Ұпайым немесе үлгерімім жоғалды</option><option value="account">Аккаунтқа кіре алмаймын</option><option value="ai">AI-көмекші жауап бермейді</option></select><button class="btn" data-a="help-diagnose">Шешімін көрсету</button></div><div id="help-diagnosis" class="help-result" hidden aria-live="polite"></div></div>
+<h2>🧭 Қадамдық нұсқаулықтар</h2><div class="help-grid">
+<div class="card2"><b>1. Сабақты оқу</b><ol><li>«Курстар» бөлімін аш.</li><li>Модульді және сабақты таңда.</li><li>Түсіндірмені оқып, мысалды орында.</li><li>«Сабақты аяқтау» батырмасын бас.</li><li>Модуль тестін тапсыр.</li></ol></div>
+<div class="card2"><b>2. Кодты орындау</b><ol><li>«Тәжірибе» бөліміне өт.</li><li>Редакторға Python кодын жаз.</li><li>«Кодты іске қосу» батырмасын бас.</li><li>Нәтижені төменгі терезеден оқы.</li><li>Қате болса, хабарламаның бірінші жолын тексер.</li></ol></div>
+<div class="card2"><b>3. Үлгерімді сақтау</b><ol><li>«Жетістіктер» не «Жеке кабинет» бөлімін аш.</li><li>«Үлгерімді жүктеп алу» батырмасын бас.</li><li>JSON файлын қауіпсіз жерде сақта.</li><li>Басқа браузерде «Үлгерімді жүктеу» арқылы қалпына келтір.</li></ol></div>
+</div>
+<h2>🧩 Дайын код үлгілері</h2><p class="mut">Көшіріп алып, тәжірибе редакторына қойып көр.</p>
+<div class="card2"><b>Экранға мәтін шығару</b><pre class="help-code">print("Сәлем, Python!")</pre><button class="btn ghost" data-a="help-copy" data-code="print(&quot;Сәлем, Python!&quot;)">📋 Кодты көшіру</button></div>
+<div class="card2"><b>Екі санды қосу</b><pre class="help-code">a = 12
+b = 8
+print("Қосынды:", a + b)</pre><button class="btn ghost" data-a="help-copy" data-code="a = 12&#10;b = 8&#10;print(&quot;Қосынды:&quot;, a + b)">📋 Кодты көшіру</button></div>
+<div class="card2"><b>Шарт және цикл</b><pre class="help-code">for number in range(1, 6):
+    if number % 2 == 0:
+        print(number, "— жұп сан")</pre><button class="btn ghost" data-a="help-copy" data-code="for number in range(1, 6):&#10;    if number % 2 == 0:&#10;        print(number, &quot;— жұп сан&quot;)">📋 Кодты көшіру</button></div>
+<h2>❓ Жиі қойылатын сұрақтар</h2><div class="help-faq" id="help-faq">
+<details class="card2"><summary>Курсты қалай өтемін?</summary><p>«Курстар» бөлімінен модуль таңда, сабақты оқы, мысалды іске қосып, «Сабақты аяқтау» батырмасын бас. Модуль соңында тест бар.</p></details>
+<details class="card2"><summary>Код редакторы қалай жұмыс істейді?</summary><p>Редакторға код жазып, «Кодты іске қосу» батырмасын бас. Нәтиже мен қателер төменде көрсетіледі.</p></details>
+<details class="card2"><summary>Python орындау ортасы не істей алады?</summary><p>Сайт Pyodide арқылы Python кодын браузерде орындайды. Алғашқы жүктеуге интернет қажет. Уақытша файлдар бет жаңартылған соң сақталмауы мүмкін.</p></details>
+<details class="card2"><summary>Ұпай қалай беріледі?</summary><p>Сабаққа — 10 XP, тапсырмаға — 15 XP, тапсырылған тестке — 50 XP беріледі. Деңгейлер: Бастаушы, Ізденуші (100), Бағдарламашы (300), Python Master (600).</p></details>
+<details class="card2"><summary>Оқу нәтижесі қайда сақталады?</summary><p>Аккаунтқа кіргенде оқу нәтижесі ортақ онлайн дерекқорда сақталады, сондықтан кез келген құрылғыдан кіріп жалғастыра аласың. Кірмесең, нәтиже осы браузерде ғана қалады.</p></details>
+<details class="card2"><summary>AI шын мәнінде жұмыс істей ме?</summary><p>Нақты AI жауаптары сервер мен API бапталған кезде ғана қолжетімді. Серверсіз нұсқада жергілікті демо түсіндірмелер ғана жұмыс істейді.</p></details>
+<details class="card2"><summary>Құпиясөзімді ұмытып қалсам не істеймін?</summary><p>Қазір сайттың өзінде құпиясөзді қалпына келтіру батырмасы жоқ. Сайт иесіне (әкімшіге) жазыңыз: ол аккаунтты дерекқор панелінен қалпына келтіре алады.</p></details>
+</div><div class="notice"><b>Ескерту:</b> бұл көмек орталығы сайт ішіндегі әрекеттерді бағыттайды. Аккаунт пен үлгерім әзірге осы браузерде сақталады; барлық құрылғыға ортақ қолдау/дерекқор үшін сервер қажет.</div>
+</section>`;
+function profile(){const L=lv(),nx=LV[L+1],p=nx?Math.round((st.xp-LV[L][1])/(nx[1]-LV[L][1])*100):100,g=st.log.filter(l=>l[1]==TD()).length;return `<h1>Жеке кабинет</h1><p class=mut>${activeUser?"Деректер ортақ онлайн дерекқорда сақталады — кез келген құрылғыдан кіре аласың.":"Үлгі профиль: аккаунтқа кірмесең, деректер осы браузерде ғана сақталады."}</p><div class="card2 row2" style="align-items:center"><div class=av>${esc(st.name[0]||"С")}</div><div style="flex:1"><b style="font-size:20px">${esc(st.name)}</b><br><span class=mut>Деңгей: ${LV[L][0]}${nx?" · «"+nx[0]+"» "+(nx[1]-st.xp)+" XP":""}</span>${bar(p)}</div></div><div class=row2><input type=text id=nm placeholder="Есімің"><button class="btn ghost" data-a=nm>Есімді өзгерту</button></div><div class=stats><div class=stat><b>${Math.round(dn()/tot()*100)}%</b><span>жалпы үлгерім</span></div><div class=stat><b>${dn()}</b><span>аяқталған сабақ</span></div><div class=stat><b>${st.xp}</b><span>ұпай</span></div><div class=stat><b>🔥 ${streak()}</b><span>күн қатарынан</span></div><div class=stat><b>${certOk()?1:0}</b><span>сертификат</span></div></div><div class=two><div class=card2><h3>Бүгінгі мақсат: 3 әрекет</h3>${bar(Math.min(100,g/3*100))}<small class=mut>Бүгін: ${Math.min(g,3)}  / 3</small><h3>Соңғы белсенділік</h3>${st.log.length?st.log.map(l=>`<div>• ${l[0]} <small class=mut>${l[1]}</small></div>`).join(""):"<span class=mut>Әзірше ештеңе жоқ — алғашқы сабақты аяқта.</span>"}</div><div class=card2><h3>Белгілер</h3>${badges()}</div></div>${certOk()?`<div class=cert><h2>🎓 Сертификат</h2><p>Осы құжат арқылы</p><h1>${esc(st.name)}</h1><p>AI ustaz платформасында «Жаңадан бастаушыларға арналған Python» курсын сәтті аяқтағаны расталады<br>${TD()}</p></div>`:`<div class=card2>🎓 Барлық сабақты аяқтап, барлық тесттен кемінде 70% жинаған соң сертификат ашылады.</div>`}<div class=toolbar><button class="btn ghost" data-a=export>💾 Үлгерімді жүктеп алу</button><label class="btn ghost" style="cursor:pointer">📂 Үлгерімді жүктеу <input type=file id=importfile accept=".json,application/json" style="display:none"></label><button class="btn ghost" data-a=rst>Үлгерімді нөлдеу</button><button class="btn ghost" data-a=printcert ${certOk()?"":"disabled"}>🖨 Сертификатты басып шығару</button></div><p class=mut>Басқа компьютерге не браузерге ауыссаң, үлгерімді файлға сақтап ал.</p>`}
+function admin(){const isT=userRole==="teacher";if(isT&&overviewCache===null&&!overviewLoading)loadOverview();
+const rows=(overviewCache||[]).map(u=>`<tr><td>${esc(u.name||"—")}</td><td>${esc(u.email)}</td><td>${u.xp}</td><td>${u.lessons}</td><td>${u.tests}</td><td>${u.last_active?new Date(u.last_active).toLocaleDateString("kk-KZ"):"—"}</td></tr>`).join("")||`<tr><td colspan="6">${overviewCache===null?"Жүктелуде…":"Әзірге оқушы жоқ"}</td></tr>`;
+const accounts=isT?`<div class=card2><h3>Оқушылар (${(overviewCache||[]).length})</h3><div class="wide"><table><tr><th>Аты-жөні</th><th>Пошта</th><th>XP</th><th>Сабақ</th><th>Тест</th><th>Соңғы кіру</th></tr>${rows}</table></div><p><button class="btn ghost" onclick="overviewCache=null;route()">Жаңарту</button></p></div>`:`<div class=card2><h3>Оқушылар тізімі</h3><p class=mut>Бұл бөлім тек мұғалімдерге ашық. Мұғалім ретінде тіркелгенде мұғалім коды керек.</p></div>`;
+return `<h1>Әкімші панелі</h1><p class=mut>Барлық оқушылардың үлгерімі ортақ онлайн дерекқордан көрсетіледі.</p>${accounts}<div class=stats><div class=stat><b>${M.length}</b><span>модуль</span></div><div class=stat><b>${tot()}</b><span>сабақ</span></div><div class=stat><b>${Object.keys(st.tests).length}</b><span>сен тапсырған тест</span></div><div class=stat><b>${dn()}</b><span>сен аяқтаған сабақ</span></div></div><h3>Модульдер</h3>`+M.map((m,i)=>`<div class=card2><div class=row2><input type=text id=mt${i} value="${esc(m.t)}" style="flex:1;min-width:200px"><button class="btn ghost" data-a=rn data-i=${i}>Сақтау</button><button class="btn ghost" data-a=dl data-i=${i}>Өшіру</button></div><small class=mut>Сабақтар саны: ${m.l.length} · Тест сұрақтары: ${(m.q||[]).length}</small></div>`).join("")+`<div class=card2><h3>Модуль қосу</h3><div class=row2><input type=text id=nmod placeholder="Модуль атауы" style="flex:1"><button class=btn data-a=am>Қосу</button></div></div><div class=card2><h3>Сабақ қосу</h3><div class=row2><select id=ls>${M.map((m,i)=>`<option value=${i}>${i+1}. ${esc(m.t)}</option>`).join("")}</select><input type=text id=lt placeholder="Сабақ атауы"><input type=text id=lh placeholder="Теория"><input type=text id=lc2 placeholder="Код (міндетті емес)"><button class=btn data-a=al>Қосу</button></div></div><div class=card2><h3>Тест сұрағын қосу</h3><div class=row2><select id=qs>${M.map((m,i)=>`<option value=${i}>${i+1}. ${esc(m.t)}</option>`).join("")}</select><input type=text id=qt placeholder="Сұрақ;нұсқа1;нұсқа2;нұсқа3;дұрыс жауап нөмірі (0-2);түсіндірме" style="flex:1;min-width:260px"><button class=btn data-a=aq>Қосу</button></div></div><h3>Оқушылар үлгерімі (үлгі)</h3><div class="card2 wide"><table><tr><th>Оқушы</th><th>Сабақтар</th><th>Ұпай</th></tr><tr><td>Алия К.</td><td>41</td><td>1240</td></tr><tr><td>Данияр С.</td><td>33</td><td>980</td></tr><tr><td>${esc(st.name)} (сен)</td><td>${dn()}</td><td>${st.xp}</td></tr></table></div><button class="btn ghost" data-a=rs>Бастапқы модульдерді қайтару</button>`}
+function game(){return `<section class="card2" style="max-width:1040px;margin:20px auto;padding:clamp(18px,3vw,30px)">
+<style>
+.cg-wrap{display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(260px,.9fr);gap:18px;margin-top:18px}
+.cg-board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;background:var(--ln);padding:8px;border-radius:16px;max-width:520px}
+.cg-cell{aspect-ratio:1;border-radius:10px;background:var(--card);display:grid;place-items:center;font-size:clamp(19px,3vw,30px);box-shadow:inset 0 0 0 1px var(--ln)}
+.cg-cell.wall{background:#596579;color:#fff}.cg-cell.goal{background:#fff4c2}.cg-cell.player{background:#e8e3ff}
+.cg-panel{background:var(--card);border:1px solid var(--ln);border-radius:15px;padding:15px}
+.cg-code{width:100%;min-height:145px;resize:vertical;border:1px solid var(--ln);border-radius:10px;padding:12px;background:var(--bg);color:var(--tx);font:14px/1.6 ui-monospace,monospace}
+.cg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.cg-status{padding:10px 12px;border-radius:10px;background:var(--bg);margin-top:12px;min-height:42px}
+.cg-keys{display:grid;grid-template-columns:repeat(3,42px);gap:5px;justify-content:center;margin:12px auto}
+.cg-keys button{height:38px;border:1px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--tx);cursor:pointer}
+@media(max-width:720px){.cg-wrap{grid-template-columns:1fr}}
+</style>
+<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div style="font-size:46px">🕹️</div><div><h1 style="margin:0">Роботпен бағдарламалау</h1><p class="mut" style="margin:5px 0 0">Python логикасымен роботты басқар, кристалды жина!</p></div></div>
+<div class="row2" style="align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px"><span class="tag" id="cg-level">1-деңгей</span><span class="tag" id="cg-score">⭐ 0 кристалл</span><span class="mut">Мақсат: 💎 кристалға жету</span></div>
+<div class="cg-wrap">
+ <div><div class="cg-board" id="cg-board" aria-label="Роботтың жолы"></div>
+  <div class="cg-keys"><span></span><button data-game="up" aria-label="Жоғары">⬆️</button><span></span><button data-game="left" aria-label="Солға">⬅️</button><button data-game="down" aria-label="Төмен">⬇️</button><button data-game="right" aria-label="Оңға">➡️</button></div>
+ </div>
+ <div class="cg-panel"><b>💻 Роботқа код жаз</b><p class="mut" style="font-size:13px">Әр жолға бір команда жаз. Мысалы:</p>
+ <textarea id="cg-code" class="cg-code" spellcheck="false">hero.moveRight();
+hero.moveRight();
+hero.moveDown();
+hero.moveDown();</textarea>
+ <div class="cg-actions"><button class="btn" data-game="run">▶ Кодты орындау</button><button class="btn ghost" data-game="reset">↺ Қайта бастау</button></div>
+ <div class="cg-status" id="cg-status" role="status">Робот дайын. Кодты орындап көр!</div>
+ <p class="mut" style="font-size:12px;margin:12px 0 0">Командалар: <code>hero.moveUp();</code>, <code>hero.moveDown();</code>, <code>hero.moveLeft();</code>, <code>hero.moveRight();</code></p>
+ <div class="cg-actions"><button class="btn ghost" data-game="next" id="cg-next" hidden>Келесі деңгей →</button><a class="btn ghost" href="#courses">📚 Сабақтарға оралу</a></div>
+ </div>
+</div></section>`}
+
+const CG_LEVELS=[
+ {start:0,goal:14,walls:[2,8,9,11,15,20,21,26],hint:"Алдымен оңға, содан кейін төмен жүр."},
+ {start:0,goal:23,walls:[1,7,8,10,13,16,19,25],hint:"Қабырғаларды айналып өт."},
+ {start:24,goal:5,walls:[6,7,12,13,17,18,22,23],hint:"Бұл жолы төменнен бастап жоғары көтеріл."}
+];
+let cgLevel=0,cgPos=0,cgWon=false,cgMoves=0;
+function cgDraw(){
+ const L=CG_LEVELS[cgLevel],board=$("#cg-board");if(!board)return;
+ $("#cg-level").textContent=(cgLevel+1)+"-деңгей / "+CG_LEVELS.length;
+ $("#cg-score").textContent="⭐ "+(Number(localStorage.getItem("cg_wins")||0))+" кристалл";
+ board.innerHTML=Array.from({length:30},(_,i)=>{let cls="cg-cell",sym="";if(L.walls.includes(i)){cls+=" wall";sym="🪨"}if(i===L.goal){cls+=" goal";sym="💎"}if(i===cgPos){cls+=" player";sym="🤖"}return `<div class="${cls}">${sym}</div>`}).join("");
+ $("#cg-next").hidden=!cgWon;
+}
+function cgReset(){cgPos=CG_LEVELS[cgLevel].start;cgWon=false;cgMoves=0;cgDraw();$("#cg-status").textContent="Деңгей қайта басталды. "+CG_LEVELS[cgLevel].hint;$("#cg-code").value="hero.moveRight();\nhero.moveRight();\nhero.moveDown();\nhero.moveDown();"}
+function cgStep(dir){
+ if(cgWon)return false;
+ const x=cgPos%6,y=Math.floor(cgPos/6),d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[dir];
+ const nx=x+d[0],ny=y+d[1],n=ny*6+nx;
+ if(nx<0||nx>5||ny<0||ny>4||CG_LEVELS[cgLevel].walls.includes(n)){ $("#cg-status").textContent="🧱 Жол жабық! Басқа бағытты таңда.";return false;}
+ cgPos=n;cgMoves++;if(cgPos===CG_LEVELS[cgLevel].goal){cgWon=true;localStorage.setItem("cg_wins",String(Number(localStorage.getItem("cg_wins")||0)+1));$("#cg-status").textContent="🎉 Жарайсың! Робот кристалды жинады. Келесі деңгейге өт!";}else{$("#cg-status").textContent="Робот жүрді. Қадам саны: "+cgMoves;}cgDraw();return true;
+}
+function cgRun(){
+ const code=$("#cg-code").value,lines=code.split(/\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#"));
+ const map={"hero.moveUp();":"up","hero.moveDown();":"down","hero.moveLeft();":"left","hero.moveRight();":"right","up":"up","down":"down","left":"left","right":"right"};
+ const moves=[];for(const line of lines){if(!map[line]){$("#cg-status").textContent="⚠️ Қате команда: "+line+" (мысалы: hero.moveRight();)";return;}moves.push(map[line]);}
+ if(!moves.length){$("#cg-status").textContent="Алдымен қозғалыс командасын жаз.";return;}
+ cgReset();for(const d of moves){if(!cgStep(d))break;if(cgWon)break;}
+ if(!cgWon&&moves.length&&cgPos!==CG_LEVELS[cgLevel].goal)$("#cg-status").textContent="Әзірге кристалға жетпедің. Кодты өзгертіп, қайта көр!";
+}
+function initCodingGame(){cgLevel=0;cgPos=CG_LEVELS[0].start;cgWon=false;cgDraw();$("#cg-status").textContent=CG_LEVELS[0].hint;}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-game]");if(!b)return;const a=b.dataset.game;if(a==="run")cgRun();else if(a==="reset")cgReset();else if(a==="next"&&cgWon){cgLevel=(cgLevel+1)%CG_LEVELS.length;cgReset();}else if(["up","down","left","right"].includes(a))cgStep(a);});
+
+function route(){if(location.hash==="#game"){let allowed=false;try{allowed=sessionStorage.getItem("robot_game_entry")==="1";sessionStorage.removeItem("robot_game_entry")}catch(e){}if(!allowed){location.hash="#home";return;}}const editor=document.querySelector('.ed textarea');if(editor){try{sessionStorage.setItem('academy_ai_code',editor.value);sessionStorage.setItem('academy_ai_topic',currentTopic());sessionStorage.setItem('academy_ai_error',lastError())}catch(e){}}const h=location.hash.slice(1)||"home",[p,a]=h.split("/"),[x,y]=(a||"").split("-").map(Number),V={home,courses,game,course:()=>course(x),lesson:()=>lesson(x,y),test:()=>test(x),practice,tutor,ach,help,profile,admin,exam};let o;try{o=(V[p]||home)()}catch(e){o=courses()}$("#app").innerHTML=`<button type="button" class="py-page-sign" aria-label="Роботты басып, CodeCombat ойынына өту"><svg class="py-robot" viewBox="0 0 250 125" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="color:var(--pu)" font-family="Fira Code,monospace">
+<ellipse class="rb-shadow" cx="125" cy="117" rx="46" ry="5" fill="currentColor" opacity=".12"/>
+<g class="rb-body">
+<line x1="125" y1="16" x2="125" y2="28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+<circle class="rb-ant" cx="125" cy="13" r="5" fill="#c4b5fd" stroke="currentColor" stroke-width="2"/>
+<rect x="88" y="27" width="74" height="54" rx="22" fill="#fff" stroke="currentColor" stroke-width="3"/>
+<rect x="97" y="38" width="56" height="32" rx="14" fill="#2e1065"/>
+<g class="rb-eyes"><ellipse cx="113" cy="52" rx="5" ry="6.5" fill="#e9d5ff"/><ellipse cx="137" cy="52" rx="5" ry="6.5" fill="#e9d5ff"/><circle cx="114.5" cy="50" r="1.6" fill="#fff"/><circle cx="138.5" cy="50" r="1.6" fill="#fff"/></g>
+<path d="M119 61Q125 66 131 61" fill="none" stroke="#e9d5ff" stroke-width="2.4" stroke-linecap="round"/>
+<circle cx="99" cy="63" r="3.6" fill="#f0abfc" opacity=".7"/><circle cx="151" cy="63" r="3.6" fill="#f0abfc" opacity=".7"/>
+<rect x="104" y="84" width="42" height="26" rx="12" fill="#fff" stroke="currentColor" stroke-width="3"/>
+<rect x="116" y="92" width="18" height="10" rx="5" fill="currentColor" opacity=".18"/>
+<circle class="rb-led" cx="125" cy="97" r="2.6" fill="currentColor"/>
+<g class="rb-arm-l"><path d="M104 92Q88 94 86 106" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></g>
+<g class="rb-arm-r"><path d="M146 92Q164 88 168 72" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="168" cy="70" r="5" fill="#fff" stroke="currentColor" stroke-width="2.5"/></g>
+</g>
+<g fill="currentColor" font-size="13" font-weight="700"><text class="rb-sym" x="178" y="44">{ }</text><text class="rb-sym b" x="64" y="40">#</text><text class="rb-sym c" x="192" y="70">&lt;/&gt;</text></g>
+</svg></button>`+o;wire();document.querySelector(".py-page-sign")?.addEventListener("click",()=>{try{sessionStorage.setItem("robot_game_entry","1")}catch(e){}location.hash="#game";});if(p==="game")initCodingGame();if(p==="tutor")tutorPageReady();window.scrollTo(0,0);document.querySelectorAll("#nav a").forEach(l=>l.classList.toggle("on",l.getAttribute("href")=="#"+p||(p=="course"||p=="lesson"||p=="test")&&l.getAttribute("href")=="#courses"))}
+const sM=()=>{sv("pa_mods",M)};
+document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,i=+b.dataset.i,t=b.dataset.t,e=t&&document.querySelector(`.ed[data-id=${t}]`);
+if(a==="help-go"){location.hash=b.dataset.href;return}
+else if(a==="help-diagnose"){const key=$("#help-problem")?.value,box=$("#help-diagnosis");const fixes={code:"1) Кодта жақша мен тырнақшаның жұбын тексер.\\n2) if, for, while жолдарының соңына қос нүкте қой.\\n3) Ішкі блокты 4 бос орынмен шегіндір.\\n4) Қате хабарламасының ең соңғы жолын оқы.\\n5) Қайта іске қосып көр.",pyodide:"1) Интернет байланысын тексер.\\n2) Бетті жаңарт.\\n3) Python ортасының алғашқы жүктелуін күте тұр.\\n4) VPN немесе желі сүзгісі Pyodide файлдарын бұғаттамағанын тексер.",lesson:"1) Сабақтағы мысалды іске қос.\\n2) Міндетті тапсырмаларды орында.\\n3) «Сабақты аяқтау» батырмасын бас.\\n4) Батырма көрінбесе, бетті жаңартып қайта кір.",test:"1) Барлық сұраққа жауап бер.\\n2) «Тексеру» батырмасын бас.\\n3) Нәтиже шыққанша бетті жаппа.\\n4) Мәселе қайталанса, модульге қайта кіріп көр.",progress:"1) Дұрыс аккаунтпен кіргеніңді тексер.\\n2) Бұрын жүктеп алған JSON үлгерім файлын ізде.\\n3) Жеке кабинеттен «Үлгерімді жүктеу» арқылы қалпына келтір.\\n4) Браузер деректерін тазалау үлгерімді өшіруі мүмкін.",account:"1) Электрондық пошта мен құпиясөзді тексер.\\n2) Құпиясөзде кемінде 6 таңба болсын.\\n3) Бұл нұсқада аккаунт осы браузерде сақталатынын ескер.\\n4) Құпиясөзді қалпына келтіру поштасы әзірге қарастырылмаған.",ai:"1) AI серверінің қосылғанын тексер.\\n2) Сервер мен API кілті бапталмаса, тек демо жауаптар көрсетіледі.\\n3) Қысқа әрі нақты сұрақ қой.\\n4) Жауап келмесе, кейінірек қайталап көр."};if(box){box.hidden=false;box.textContent=fixes[key]||"Алдымен тізімнен мәселені таңда."}}
+else if(a==="help-copy"){const code=b.dataset.code||"";try{await navigator.clipboard.writeText(code);b.textContent="✓ Көшірілді"}catch(err){const ta=document.createElement("textarea");ta.value=code;document.body.append(ta);ta.select();try{document.execCommand("copy");b.textContent="✓ Көшірілді"}catch(e){b.textContent="Көшіру мүмкін болмады"}ta.remove()}}
+else if(a=="sample"){const q=$("#aiquestion");if(q){q.value=b.dataset.q;q.focus()}}
+else if(a=="ask"){const input=$("#aiquestion"),q=input?.value.trim();if(!q)return;const mode=$("#aimode");b.disabled=true;input.value="";pushTutorMessage('user',q);pushTutorMessage('bot','Жауап дайындалуда…');try{const data=await askTutor(q);tutorMessages[tutorMessages.length-1]={role:'bot',text:data.answer};saveTutorChat();drawTutorMessages();if(mode)mode.textContent=data.mode}catch(ex){tutorMessages[tutorMessages.length-1]={role:'bot',text:'Жауап алу мүмкін болмады. Қайта көр.'};saveTutorChat();drawTutorMessages()}finally{b.disabled=false;input.focus()}}
+else if(a==="copyai"){const answer=[...tutorMessages].reverse().find(x=>x.role==='bot');if(answer){try{await navigator.clipboard.writeText(answer.text);b.textContent='✓ Көшірілді'}catch(ex){b.textContent='Көшіру мүмкін болмады'}}}
+else if(a==="clearchat"){tutorMessages.length=0;saveTutorChat();tutorPageReady();const mode=$("#aimode");refreshAIStatus()}
+else if(a=="hint"){const d=$("#hint"+i);d.hidden=!d.hidden;d.textContent=PRACTICE_GUIDES[i].hint}
+else if(a=="run")execute(t);
+else if(a=="reset"){e.querySelector("textarea").value=e.dataset.init;e.u()}
+else if(a=="done"){if(!st.done[b.dataset.k]){st.done[b.dataset.k]=1;touch("Сабақ «"+t+"»",10)}route()}
+else if(a=="tsub"){const m=M[i];let sc=0;m.q.forEach((q,n)=>{const p=q.split(";"),c=document.querySelector(`input[name=q${n}]:checked`),ok=c&&+c.value==+p[4],x=$("#ex"+n);if(ok)sc++;x.hidden=false;x.textContent=(ok?"✓ Дұрыс. ":"✗ Қате. ")+p[5]});const pc=Math.round(sc/m.q.length*100),ps=pc>=70;if(ps&&!(st.tests[i]>=70))touch("Тест «"+m.t+"»",50);st.tests[i]=Math.max(pc,st.tests[i]||0);sv("pa_st",st);$("#tres").innerHTML=`<div class="msg ${ps?"ok":"no"}">Нәтиже: ${sc} / ${m.q.length} (${pc}%). ${ps?"Тесттен өттің!":"Тесттен өтпедің. Сабақтарды қайталап, қайта тапсырып көр."}</div>`}
+else if(a=="pick"){(ord[i]=ord[i]||[]).push(b.dataset.v);$("#or"+i).textContent=ord[i].join("\n")}
+else if(a=="clr"){ord[i]=[];$("#or"+i).textContent="(бос)"}
+else if(a=="chk"){if(b.disabled)return;b.disabled=true;const e0=PR[i];let ok=false;if(e0.t=="one"){const c=document.querySelector(`input[name=e${i}]:checked`);ok=c&&+c.value==e0.a}else if(e0.t=="multi")ok=[...document.querySelectorAll(`input[name=e${i}]:checked`)].map(x=>+x.value).sort((a,b)=>a-b).join()==[...e0.a].sort((a,b)=>a-b).join();else if(e0.t=="fill")ok=$("#f"+i).value.trim()==e0.a;else if(e0.t=="order")ok=(ord[i]||[]).join("|")==e0.a;else{const o=await execute("p"+i);ok=!!o&&!o.err&&o.text.trim()==e0.a}
+$("#r"+i).innerHTML=`<div class="msg ${ok?"ok":"no"}">${ok?"✓ Дұрыс! "+e0.e:"✗ Қате. Қайтадан орындап көр."}</div>`;if(ok&&!st.ex[i]){st.ex[i]=1;touch("Тапсырма "+(i+1),15)}b.disabled=false}
+else if(a=="export"){const data=JSON.stringify({version:2,progress:st,modules:M},null,2);const u=URL.createObjectURL(new Blob([data],{type:"application/json"}));const link=document.createElement("a");link.href=u;link.download="simple-learning-progress.json";link.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+ else if(a=="printcert"){if(certOk())window.print()}
+ else if(a=="nm"){const v=$("#nm").value.trim();if(v){st.name=v.slice(0,60);sv("pa_st",st);route()}}
+else if(a=="rst"){if(!confirm("Осы браузердегі бүкіл оқу нәтижесін өшіресің бе?"))return;st={done:{},ex:{},tests:{},xp:0,days:[],log:[],name:st.name};sv("pa_st",st);hdr();route()}
+else if(a=="rn"){M[i].t=$("#mt"+i).value.trim()||M[i].t;sM();route()}
+else if(a=="dl"){if(!confirm("Модульді өшіресің бе? Сабақтар мен тесттердің үлгерімі тазаланады."))return;M.splice(i,1);st.done={};st.tests={};sv("pa_st",st);sM();route()}
+else if(a=="am"){const v=$("#nmod").value.trim();if(v){M.push({t:v,l:["Кіріспе|Жаңа модульдің алғашқы сабағы.|print(\"Сәлем!\")"],q:[]});sM();route()}}
+else if(a=="al"){const v=$("#lt").value.trim().replace(/\|/g,"/");if(v){M[+$("#ls").value].l.push(v+"|"+($("#lh").value.replace(/\|/g,"/")||"Сабақ сипаттамасы.")+"|"+($("#lc2").value||"print(\"Python\")"));sM();route()}}
+else if(a=="aq"){const v=$("#qt").value.trim();if(v.split(";").length>=6){(M[+$("#qs").value].q=M[+$("#qs").value].q||[]).push(v);sM();route()}}
+else if(a=="rs"){if(!confirm("Бастапқы модульдерді қайтарасың ба?"))return;M=JSON.parse(JSON.stringify(DEF));st.done={};st.tests={};sv("pa_st",st);sM();route()}});
+document.addEventListener("input",ev=>{if(ev.target.id!=="help-search")return;const q=ev.target.value.toLocaleLowerCase("kk");document.querySelectorAll("#help-faq details").forEach(d=>{d.hidden=!d.textContent.toLocaleLowerCase("kk").includes(q)});document.querySelectorAll(".help-grid .help-action").forEach(c=>{c.hidden=!!q&&!c.textContent.toLocaleLowerCase("kk").includes(q)});});
+document.querySelector("#theme").addEventListener("click",()=>{const dark=document.documentElement.dataset.theme!=="dark";document.documentElement.dataset.theme=dark?"dark":"light";sv("pa_theme",dark?"dark":"light")});
+const savedTheme=ld("pa_theme",null);if(savedTheme)document.documentElement.dataset.theme=savedTheme;
+document.addEventListener("change",async ev=>{if(ev.target.id!=="importfile")return;const f=ev.target.files?.[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!j.progress||typeof j.progress!=="object"||!Array.isArray(j.modules)||!j.modules.every(m=>typeof m.t==="string"&&Array.isArray(m.l)&&Array.isArray(m.q)))throw Error("Үлгерім файлының пішімі дұрыс емес");if(!confirm("Қазіргі үлгерімді файлдағы деректермен алмастырасың ба?"))return;const p=j.progress;st={done:p.done||{},ex:p.ex||{},tests:p.tests||{},xp:Math.max(0,Math.min(1000000,+p.xp||0)),days:Array.isArray(p.days)?p.days:[],log:Array.isArray(p.log)?p.log:[],name:String(p.name||"Оқушы").slice(0,60)};M=j.modules;sv("pa_st",st);sM();hdr();route();alert("Үлгерім сәтті жүктелді") }catch(e){alert("Жүктеу қатесі: "+e.message)}finally{ev.target.value=""}});
+document.addEventListener('keydown',ev=>{if(ev.target?.id==='aiquestion'&&ev.key==='Enter'&&!ev.shiftKey&&!ev.isComposing){ev.preventDefault();$('#aisend')?.click()}});
+
+/* ---------- Емтихан (прокторинг) ---------- */
+const EXAM=[
+{t:"one",q:"x = 10\nx += 5\nprint(x) нені шығарады?",o:["10","15","5"],a:1},
+{t:"one",q:"Қай оператор бөлудің бүтін бөлігін қайтарады?",o:["/","//","%"],a:1},
+{t:"one",q:"len(\"Python\") нәтижесі қандай?",o:["5","6","7"],a:1},
+{t:"multi",q:"Қайсысы дұрыс айнымалы аты?",o:["my_var","2name","name2","for"],a:[0,2]},
+{t:"fill",q:"print(10 % 3) нені шығарады?",a:"1"},
+{t:"one",q:"Тізімнің соңына элемент қосатын әдіс қайсы?",o:["add()","append()","push()"],a:1},
+{t:"one",q:"Python-да код блогы қалай белгіленеді?",o:["Шегіністермен","Фигуралы жақшамен","end сөзімен"],a:0},
+{t:"fill",q:"for i in range(3): print(i) циклі соңында қай санды шығарады?",a:"2"},
+{t:"multi",q:"Қайсысы Python дерек түрлері?",o:["int","float","loop","str"],a:[0,1,3]},
+{t:"fill",q:"def f(a): return a * 2\nprint(f(4)) нені шығарады?",a:"8"}
+];
+const EXAM_MIN=15,EXAM_MAX=3;let EX=null;
+const exEmpty=a=>a==null||a===""||(Array.isArray(a)&&!a.length);
+function exam(){const r=(st.exams||[]).slice(0,5).map(e=>`<tr><td>${esc(e.date)}</td><td>${e.score}/${e.total}</td><td>${e.violations}</td><td>${esc(e.status)}</td></tr>`).join("");
+return `<h1>Емтихан</h1><p class=mut>Python негіздері бойынша қорытынды емтихан: ${EXAM.length} сұрақ, ${EXAM_MIN} минут. Өту үшін кемінде 70% қажет.</p><div class=notice><b>Емтихан ережелері</b><ul><li>Емтихан толық экран режимінде өтеді.</li><li>Басқа сайтқа, қойындыға немесе терезеге өту, толық экраннан шығу, Google Lens ашу, оң жақ батырма мәзірі, скриншот және қызметтік пернелер — бұзушылық болып саналады.</li><li>Көшіру, қою және AI-көмекші емтихан кезінде өшірулі.</li><li>${EXAM_MAX} бұзушылықтан кейін емтихан тоқтатылып, нәтиже жарамсыз болады.</li></ul></div><div class=row2><button class=btn data-x=exstart>Емтиханды бастау</button></div>${r?`<h3>Алдыңғы әрекеттер</h3><div class="card2 wide"><table><tr><th>Күні</th><th>Нәтиже</th><th>Бұзушылық</th><th>Мәртебе</th></tr>${r}</table></div>`:""}`}
+async function exStart(){if(EX)return;const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;
+ if(!rq){alert("Бұл браузер толық экранды қолдамайды. Емтиханды компьютердегі Chrome, Edge немесе Firefox-та өтіңіз.");return}
+ try{await rq.call(el)}catch(e){alert("Толық экран қосылмады. Емтихан толық экран режимінсіз басталмайды.");return}
+ const ids=EXAM.map((_,i)=>i);for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+ EX={q:ids,i:0,ans:{},viol:[],end:Date.now()+EXAM_MIN*60000,last:Date.now(),done:false};
+ try{toggleFloatingAI(false)}catch(e){}
+ document.querySelectorAll("header,main,#ai-float-toggle,#ai-floating").forEach(e=>e.inert=true);
+ const r=document.createElement("div");r.id="exam-root";r.className="exam-overlay";document.body.append(r);
+ EX.timer=setInterval(exTick,500);exRender()}
+function exTick(){if(!EX||EX.done)return;const l=EX.end-Date.now();if(l<=0){exFinish("Уақыт аяқталды.");return}const t=$("#ex-time");if(t)t.textContent="⏱ "+String(Math.floor(l/60000)).padStart(2,"0")+":"+String(Math.floor(l/1000)%60).padStart(2,"0")}
+function exSave(){if(!EX||EX.done||!$("#exam-root .ex-body"))return;const qi=EX.q[EX.i];EXAM[qi].t=="fill"?EX.ans[qi]=$("#exf")?.value||"":EX.ans[qi]=[...document.querySelectorAll("input[name=exq]:checked")].map(x=>+x.value)}
+function exRender(){const root=$("#exam-root");if(!root||!EX)return;const qi=EX.q[EX.i],q=EXAM[qi],a=EX.ans[qi],un=EX.q.filter(id=>exEmpty(EX.ans[id])).length;
+ const body=q.t=="fill"?`<input type=text id=exf value="${esc(a||"")}" autocomplete=off autocapitalize=off spellcheck=false aria-label="Жауап">`:q.o.map((o,k)=>`<label class=opt><input type=${q.t=="one"?"radio":"checkbox"} name=exq value=${k} ${(a||[]).includes(k)?"checked":""}>${esc(o)}</label>`).join("");
+ root.innerHTML=`<div class=ex-top><b>AI ustaz · Емтихан</b><span class=ex-chip id=ex-time></span><span class=ex-chip>Бұзушылық: ${EX.viol.length}/${EXAM_MAX}</span></div><div class=ex-body><p class=tag>Сұрақ ${EX.i+1} / ${EX.q.length} · ${TL[q.t]}</p><pre class=st>${esc(q.q)}</pre>${body}<div class=ex-dots>${EX.q.map((id,n)=>`<button type=button class="ex-dot${n==EX.i?" on":""}${exEmpty(EX.ans[id])?"":" ok"}" data-x=exgo data-n=${n} aria-label="Сұрақ ${n+1}">${n+1}</button>`).join("")}</div><div class=row2><button class="btn ghost" data-x=exprev ${EX.i?"":"disabled"}>← Артқа</button>${EX.i<EX.q.length-1?`<button class=btn data-x=exnext>Алға →</button>`:`<button class=btn data-x=exfinish>Аяқтау (жауапсыз: ${un})</button>`}</div></div>`;exTick()}
+function exViol(why){if(!EX||EX.done)return;const n=Date.now();if(n-EX.last<1500)return;EX.last=n;EX.viol.push(why+" · "+new Date().toLocaleTimeString());
+ if(EX.viol.length>=EXAM_MAX){exFinish("Бұзушылық шегінен асты. Емтихан тоқтатылды.");return}
+ exSave();exRender();let w=$("#exam-warn");if(!w){w=document.createElement("div");w.id="exam-warn";w.className="exam-warn";document.body.append(w)}
+ w.innerHTML=`<div class=ex-warn-card role=alertdialog aria-modal=true aria-labelledby=exw><h2 id=exw>⚠ Бұзушылық тіркелді</h2><p>${esc(why)}</p><p>Бұзушылық: <b>${EX.viol.length}/${EXAM_MAX}</b>. Келесісінде емтихан тоқтатылады.</p><button class=btn data-x=exback>Емтиханға оралу</button></div>`;w.querySelector("button").focus()}
+function exFinish(reason){if(!EX||EX.done)return;exSave();EX.done=true;clearInterval(EX.timer);$("#exam-warn")?.remove();
+ let sc=0;EXAM.forEach((q,i)=>{const a=EX.ans[i];if(q.t=="fill"){if(String(a||"").trim()==q.a)sc++}else if(a&&a.slice().sort((x,y)=>x-y).join()==[].concat(q.a).sort((x,y)=>x-y).join())sc++});
+ const total=EXAM.length,pc=Math.round(sc/total*100),bad=EX.viol.length>=EXAM_MAX,status=bad?"Жарамсыз":pc>=70?"Тапсырылды":"Тапсырылмады";
+ (st.exams=st.exams||[]).unshift({date:TD(),score:sc,total,violations:EX.viol.length,status});st.exams=st.exams.slice(0,10);
+ if(status=="Тапсырылды")touch("Емтихан",100);else sv("pa_st",st);
+ if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ $("#exam-root").innerHTML=`<div class=ex-body><h1>${bad?"Емтихан тоқтатылды":"Емтихан аяқталды"}</h1>${reason?`<p class=mut>${esc(reason)}</p>`:""}<div class=stats><div class=stat><b>${pc}%</b><span>${sc} / ${total}</span></div><div class=stat><b>${EX.viol.length}</b><span>бұзушылық</span></div><div class=stat><b>${status}</b><span>мәртебе</span></div></div>${EX.viol.length?`<h3>Тіркелген бұзушылықтар</h3><ul>${EX.viol.map(v=>`<li>${esc(v)}</li>`).join("")}</ul>`:""}<div class=row2><button class=btn data-x=exclose>Жабу</button></div></div>`}
+function exClose(){$("#exam-root")?.remove();$("#exam-warn")?.remove();document.querySelectorAll("header,main,#ai-float-toggle,#ai-floating").forEach(e=>e.inert=false);EX=null;route()}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-x]");if(!b)return;const x=b.dataset.x;
+ if(x=="exstart")exStart();else if(x=="exclose")exClose();
+ else if(x=="exback"){$("#exam-warn")?.remove();const el=document.documentElement;if(!document.fullscreenElement)(el.requestFullscreen||el.webkitRequestFullscreen)?.call(el)?.catch?.(()=>{});if(EX)EX.last=Date.now()}
+ else if(!EX||EX.done)return;
+ else if(x=="exnext"){exSave();EX.i++;exRender()}else if(x=="exprev"){exSave();EX.i--;exRender()}
+ else if(x=="exgo"){exSave();EX.i=+b.dataset.n;exRender()}else if(x=="exfinish")exFinish("")});
+const exOn=()=>EX&&!EX.done;
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&exOn())exViol("Басқа қойындыға немесе терезеге ауысу")});
+window.addEventListener("blur",()=>{if(exOn())exViol("Емтихан беті белсенділігін жоғалтты (басқа сайт, қолданба, қойынды немесе Google Lens)")});
+document.addEventListener("fullscreenchange",()=>{if(exOn()&&!document.fullscreenElement)exViol("Толық экран режимінен шығу")});
+document.addEventListener("contextmenu",ev=>{if(exOn()){ev.preventDefault();exViol("Контекстік мәзір ашылды (Google Lens тыйым салынған)")}});
+["copy","cut","paste","dragstart"].forEach(t=>document.addEventListener(t,ev=>{if(exOn())ev.preventDefault()}));
+document.addEventListener("keydown",ev=>{if(!exOn())return;const k=ev.key.toLowerCase(),c=ev.ctrlKey||ev.metaKey;
+ if(k=="f12"||(c&&ev.shiftKey&&["i","j","c"].includes(k))||(c&&["u","s","p","t","n","w","l"].includes(k))){ev.preventDefault();exViol("Тыйым салынған пернелер тіркесімі")}});
+document.addEventListener("keyup",ev=>{if(exOn()&&ev.key=="PrintScreen"){try{navigator.clipboard.writeText("")}catch(e){}exViol("Скриншот алу әрекеті")}});
+window.addEventListener("beforeunload",ev=>{if(exOn()){ev.preventDefault();ev.returnValue=""}});
+
+// Ашық сайт + бөлек кіру/тіркелу беттері. Бұл нұсқада аккаунттар осы браузерде сақталады.
+// --- ОРТАҚ ДЕРЕКҚОР (Supabase) ---
+// Бұл кілт браузерде жариялауға арналған; деректерді қорғау ережелері (RLS) дерекқордың өзінде.
+const SUPABASE_URL='https://wfgjmgwvptwezfbhkgeg.supabase.co',SUPABASE_ANON_KEY='sb_publishable_LZnq6pyzz3MJp9oFk5fy7w_ZYlzHt5M';
+const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+var userRole='student',sbUserId=null,overviewCache=null,overviewLoading=false,pushTimer=null;
+function ustazToast(m){try{const d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:9999;background:#b91c1c;color:#fff;padding:10px 16px;border-radius:10px;font:600 14px Manrope,sans-serif;max-width:90vw';document.body.appendChild(d);setTimeout(()=>d.remove(),5000);}catch(e){}}
+function authErrorKk(e){const m=String((e&&e.message)||e||"").toLowerCase();
+ if(m.includes("invalid login credentials"))return "Пошта немесе құпиясөз қате.";
+ if(m.includes("already registered"))return "Бұл пошта бұрын тіркелген. Кіруді таңдаңыз.";
+ if(m.includes("email not confirmed"))return "Поштаны растаңыз: хаттағы сілтемені басыңыз.";
+ if(m.includes("database error saving new user"))return "Тіркелу сәтсіз болды. Мұғалім кодын тексеріңіз (оқушы болсаңыз кодты бос қалдырыңыз).";
+ if(m.includes("rate limit")||m.includes("too many"))return "Тым көп әрекет. Бір минут күтіп, қайта көріңіз.";
+ if(m.includes("failed to fetch")||m.includes("network"))return "Интернет байланысын тексеріңіз.";
+ return "Қате: "+((e&&e.message)||"белгісіз");}
+function mergeProgress(a,b){a=a||emptyProgress();b=b||emptyProgress();const o=emptyProgress();
+ o.done={...(b.done||{}),...(a.done||{})};o.ex={...(b.ex||{}),...(a.ex||{})};o.tests={...(b.tests||{}),...(a.tests||{})};
+ o.xp=Math.max(a.xp||0,b.xp||0);o.days=[...new Set([...(b.days||[]),...(a.days||[])])];
+ o.log=((a.xp||0)>=(b.xp||0)?a.log:b.log)||[];
+ o.name=(a.name&&a.name!=="Оқушы")?a.name:(b.name||a.name);return o;}
+function queuePush(){if(!sb||!activeUser||!sbUserId)return;clearTimeout(pushTimer);pushTimer=setTimeout(pushProgress,1200);}
+async function pushProgress(){if(!sb||!activeUser||!sbUserId)return;clearTimeout(pushTimer);pushTimer=null;
+ try{const row={user_id:sbUserId,data:st,xp:st.xp|0,lessons_done:Object.keys(st.done||{}).length,tests_done:Object.keys(st.tests||{}).length,last_active:TD(),updated_at:new Date().toISOString()};
+  const {error}=await sb.from('ustaz_progress').upsert(row,{onConflict:'user_id'});if(error)throw error;
+ }catch(e){console.warn("Progress sync failed",e);ustazToast("Прогресті дерекқорға сақтау мүмкін болмады. Интернетті тексеріңіз.");}}
+async function syncAfterLogin(){
+ const {data:ud}=await sb.auth.getUser();const u=ud&&ud.user;if(!u)throw new Error("no user");sbUserId=u.id;
+ let pr=await sb.from('ustaz_profiles').select('name,role').eq('id',u.id).maybeSingle();
+ if(!pr.data){await sb.rpc('ustaz_ensure_profile',{p_name:(st&&st.name&&st.name!=="Оқушы")?st.name:""});pr=await sb.from('ustaz_profiles').select('name,role').eq('id',u.id).maybeSingle();}
+ userRole=(pr.data&&pr.data.role)||'student';
+ const rp=await sb.from('ustaz_progress').select('data').eq('user_id',u.id).maybeSingle();
+ const remote=(rp.data&&rp.data.data&&Object.keys(rp.data.data).length)?rp.data.data:null;
+ st=mergeProgress(ld("pa_st",emptyProgress()),remote);
+ if((!st.name||st.name==="Оқушы")&&pr.data&&pr.data.name)st.name=pr.data.name;
+ sv("pa_st",st);hdr();}
+async function loadOverview(){if(!sb)return;overviewLoading=true;
+ try{const {data,error}=await sb.rpc('ustaz_overview');if(error)throw error;overviewCache=data||[];}catch(e){console.warn(e);overviewCache=[];}
+ overviewLoading=false;if(location.hash==="#admin")route();}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&pushTimer)pushProgress();});
+window.addEventListener("pagehide",()=>{if(pushTimer)pushProgress();});
+let authMode="login";
+let authReturnHash="home";
+const authUsers=()=>{try{return JSON.parse(localStorage.getItem("pa_users")||"{}")||{}}catch(e){return {}}};
+async function passwordHash(value){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest("SHA-256",bytes);return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function authView(mode){authMode=mode;const reg=mode==="register";$("#auth-title").textContent=reg?"Тіркелу":"Қош келдіңіз!";$("#auth-subtitle").textContent=reg?"Жаңа аккаунт жасаңыз.":"Аккаунтыңызға кіріңіз немесе сайтты ашық режимде пайдаланыңыз.";$("#auth-name-wrap").hidden=!reg;$("#auth-code-wrap").hidden=!reg;$("#auth-name").required=reg;$("#auth-password").autocomplete=reg?"new-password":"current-password";$("#auth-password-toggle").hidden=false;$("#auth-password-toggle").textContent="👁 Құпиясөзді көрсету";$("#auth-password").type="password";$("#auth-submit").textContent=reg?"Тіркелу":"Кіру";$("#auth-switch").textContent=reg?"Аккаунтыңыз бар ма? Кіру":"Аккаунтыңыз жоқ па? Тіркелу";$("#auth-error").textContent="";}
+function authShow(){const h=location.hash.slice(1)||"home",isAuth=h==="login"||h==="register";$("#auth-screen").hidden=!isAuth;$("#auth-logout").hidden=!activeUser;$("#ai-float-toggle").hidden=false;$("#ai-floating").hidden=true;document.body.style.overflow="";if(isAuth){authView(h);if(!$("#app").innerHTML.trim()){hdr();route();}}else{hdr();route();}}
+document.querySelectorAll('#nav a[href="#login"],#nav a[href="#register"]').forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();const current=location.hash.slice(1);if(current&&current!=="login"&&current!=="register")authReturnHash=current;location.hash=a.getAttribute("href");}));
+$("#auth-switch").addEventListener("click",()=>{location.hash=authMode==="login"?"#register":"#login";});
+$("#auth-close").addEventListener("click",()=>{location.hash="#"+(authReturnHash||"home");});
+$("#auth-screen").addEventListener("click",ev=>{if(ev.target===$("#auth-screen"))location.hash="#"+(authReturnHash||"home");});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&!$("#auth-screen").hidden)location.hash="#"+(authReturnHash||"home");});
+$("#auth-password-toggle").addEventListener("click",()=>{const f=$("#auth-password"),b=$("#auth-password-toggle"),show=f.type==="password";f.type=show?"text":"password";b.textContent=show?"🙈 Құпиясөзді жасыру":"👁 Құпиясөзді көрсету";b.setAttribute("aria-pressed",String(show));});
+try{const remembered=localStorage.getItem("pa_remembered_email");if(remembered)$("#auth-email").value=remembered;}catch(e){}
+$("#auth-form").addEventListener("submit",async ev=>{ev.preventDefault();
+ const email=$("#auth-email").value.trim().toLowerCase(),pass=$("#auth-password").value,name=$("#auth-name").value.trim(),code=$("#auth-code").value.trim(),err=$("#auth-error"),btn=$("#auth-submit");err.textContent="";
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.textContent="Электрондық пошта мекенжайын дұрыс енгізіңіз.";return;}
+ if(pass.length<6){err.textContent="Құпиясөз кемінде 6 таңбадан тұруы керек.";return;}
+ if(!sb){err.textContent="Дерекқорға қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.";return;}
+ if(authMode==="register"&&!name){err.textContent="Аты-жөніңізді енгізіңіз.";return;}
+ btn.disabled=true;
+ try{
+  if(authMode==="register"){
+   const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{app:"ustaz",name:name.slice(0,60),teacher_code:code}}});
+   if(error)throw error;
+   if(!data.session){err.textContent="Аккаунт жасалды. Поштаға келген хаттағы сілтемені басып растаңыз да, «Кіру» арқылы кіріңіз.";return;}
+  }else{
+   const {error}=await sb.auth.signInWithPassword({email,password:pass});if(error)throw error;
+  }
+  activeUser=email;try{localStorage.setItem("pa_remembered_email",email);}catch(e){}
+  localStorage.setItem("pa_current_user",email);
+  st=ld("pa_st",emptyProgress());if(authMode==="register"&&name)st.name=name.slice(0,60);
+  await syncAfterLogin();
+  location.hash="#profile";
+ }catch(e){err.textContent=authErrorKk(e);}finally{btn.disabled=false;}});
+$("#auth-logout").addEventListener("click",async()=>{if(!confirm("Аккаунттан шығасыз ба?"))return;
+ try{await pushProgress();if(sb)await sb.auth.signOut();}catch(e){console.warn(e);}
+ activeUser="";localStorage.removeItem("pa_current_user");userRole='student';sbUserId=null;overviewCache=null;st=emptyProgress();location.hash="#home";});
+if(activeUser&&sb){sb.auth.getSession().then(async({data})=>{
+ const s=data&&data.session;
+ if(!s||(s.user.email||"").toLowerCase()!==activeUser){activeUser="";localStorage.removeItem("pa_current_user");st=ld("pa_st",emptyProgress());authShow();return;}
+ try{await syncAfterLogin();}catch(e){console.warn(e);}
+ authShow();});}
+window.onhashchange=()=>{authShow();if(!["login","register"].includes(location.hash.slice(1))){updateFloatContext();}};
+authShow();
+
+/* Қалқымалы AI — барлық бетте, ағымдағы сабақ/тапсырмамен бірге */
+let aiFloatBusy=false;
+function aiPageInfo(){
+ const h=location.hash.slice(1)||'home',m=h.match(/^lesson\/(\d+)-(\d+)/),t=h.match(/^test\/(\d+)/);
+ if(m&&M[+m[1]]?.l[+m[2]]){const p=M[+m[1]].l[+m[2]].split('|');return {type:'lesson',text:'Сабақ: '+p[0]+' — '+p[1],label:'📖 Сабақ: '+p[0]};}
+ if(t&&M[+t[1]])return {type:'test',text:'Бақылау тесті: '+M[+t[1]].t+'. Дайын жауапты немесе дұрыс нұсқаны ашпа; тек жалпы ереже мен ойлау жолын түсіндір.',label:'📝 Бақылау: '+M[+t[1]].t};
+ if(h.startsWith('practice'))return {type:'practice',text:'Python практикалық тапсырмалары: білім алушының ағымдағы тапсырмасын өз бетінше шешуіне көмектес.',label:'🧩 Тәжірибе тапсырмалары'};
+ if(h.startsWith('course/')){const i=Number(h.split('/')[1]);return {type:'course',text:'Курс: '+(M[i]?.t||'Python'),label:'📚 '+(M[i]?.t||'Курстар')}}
+ return {type:'general',text:'AI ustaz веб-платформасы',label:'🌐 Сайттың кез келген бөлімінде көмек'};
+}
+function updateFloatContext(){const el=document.getElementById('ai-float-context');if(!el)return;const p=aiPageInfo();el.textContent=p.label+(p.type==='test'?' · Дайын жауап берілмейді':'');}
+function drawFloatMessages(){const box=document.getElementById('ai-float-messages');if(!box)return;box.replaceChildren();
+ const items=tutorMessages.length?tutorMessages:[{role:'bot',text:'Сәлем! Мен AI ustaz көмекшісімін. Сабақты түсіндіремін, код қатесін талдаймын және тапсырманы орындауға бағыт беремін. Қандай сұрағың бар?'}];
+ items.slice(-24).forEach(m=>{const d=document.createElement('div');d.className='ai-float-message '+(m.role==='user'?'user':'bot');const label=document.createElement('small');label.textContent=m.role==='user'?'Сен':'🤖 AI-көмекші';d.append(label,document.createTextNode(m.text));box.append(d)});box.scrollTop=box.scrollHeight;}
+function toggleFloatingAI(open){const panel=document.getElementById('ai-floating');const button=document.getElementById('ai-float-toggle');if(!panel||!button)return;panel.hidden=!open;button.setAttribute('aria-expanded',String(open));updateFloatContext();if(open){drawFloatMessages();document.getElementById('ai-float-input')?.focus();}}
+async function askFloatingAI(){const input=document.getElementById('ai-float-input');const btn=document.getElementById('ai-float-send');const q=input?.value.trim();if(!q||aiFloatBusy)return;
+ aiFloatBusy=true;btn.disabled=true;input.value='';pushTutorMessage('user',q);pushTutorMessage('bot','Жауап дайындалуда…');drawFloatMessages();
+ try{const p=aiPageInfo();const history=tutorMessages.slice(0,-2).slice(-10).map(m=>({role:m.role==='bot'?'assistant':'user',content:m.text}));
+ const question=p.type==='test'?'БАҚЫЛАУ ТЕСТІ: Қажетті ұғымды, теорияны және қадамдарды түсіндір, бірақ нақты тест сұрағының дұрыс жауабын, нұсқасын немесе дайын шешімін айтпа. Пайдаланушы сұрағы: '+q:q;
+ const result=await askTutorWithContext(question,p.text,history);
+ tutorMessages[tutorMessages.length-1]={role:'bot',text:result.answer};saveTutorChat();const status=document.getElementById('ai-float-status');if(status)status.textContent=result.mode;
+ }catch(err){tutorMessages[tutorMessages.length-1]={role:'bot',text:'Жауап алу мүмкін болмады. Байланысты тексеріп, қайта көр.'};saveTutorChat();}
+ finally{drawTutorMessages();drawFloatMessages();btn.disabled=false;aiFloatBusy=false;input.focus();}}
+async function askTutorWithContext(question,context,history){
+ try{const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question,context,code:aiPageInfo().type==='test'?'':codeFromPage(),error:aiPageInfo().type==='test'?'':lastError(),history,assessment:aiPageInfo().type==='test'})});const d=await r.json();if(r.ok&&typeof d.answer==='string'&&d.answer.trim())return {answer:d.answer,mode:'🟢 Нақты AI қосылған'};if(r.status!==503)return {answer:'⚠️ '+(d.error||'AI жауап бере алмады.'),mode:'🔴 Сервер қатесі'};}catch(e){}
+ if(aiPageInfo().type==='test')return {answer:'📝 Бақылау режимі: дұрыс жауапты көрсетпеймін. Шартты мұқият оқы, Python ережесін есіңе түсір, өз нұсқаңды таңда. Тесттен кейін сабақтағы мысалдар арқылы тақырыпты түсіндіре аламын.\n\n⚠️ Нақты AI қосылмаған: бұл жергілікті кеңес.',mode:'🟡 Демо режим'};
+ return {answer:localExplain(question,context,codeFromPage(),lastError())+'\n\n⚠️ Бұл жергілікті түсіндірме. Кез келген сұраққа толық жауап беру үшін Flask сервері мен API кілті қажет.',mode:'🟡 Демо режим'};
+}
+document.getElementById('ai-float-toggle').addEventListener('click',()=>toggleFloatingAI(document.getElementById('ai-floating').hidden));
+document.getElementById('ai-float-close').addEventListener('click',()=>toggleFloatingAI(false));
+document.getElementById('ai-float-send').addEventListener('click',askFloatingAI);
+document.getElementById('ai-float-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askFloatingAI();}});
+document.getElementById('ai-float-suggest').addEventListener('click',()=>{const p=aiPageInfo(),input=document.getElementById('ai-float-input');input.value=p.type==='test'?'Осы тақырыптың негізгі ережесін түсіндір, дайын тест жауабын айтпа':p.type==='lesson'?'Осы сабақты қарапайым мысалмен қадамдап түсіндір':p.type==='practice'?'Осы тапсырманы шешуге бағыт бер, дайын жауапты бірден берме':'Python үйренуді неден бастаймын?';input.focus();});
+
+updateFloatContext();
+</script></body></html>
